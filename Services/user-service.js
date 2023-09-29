@@ -1,4 +1,4 @@
-const UserModel = require("../models/models")
+const {UserModel} = require("../models/models")
 const bcrypt = require("bcrypt")
 const uuid = require("uuid")
 const MailService = require("./mail-service")
@@ -8,7 +8,7 @@ const UserDto = require("../dtos/user-dto")
 
 class UserService {
     async registration(email, name, password) {
-        const candidate = await UserModel.findOne({email})
+        const candidate = await UserModel.findOne({where: {email}})
         if (candidate) {
             throw new Error("Users with this email already exist")
         }

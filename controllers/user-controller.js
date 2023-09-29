@@ -1,4 +1,4 @@
-const UserService = require("../Services/user-service")
+const UserService = require("../services/user-service")
 
 class UserController {
     async registration(req, res, next) {
@@ -14,7 +14,7 @@ class UserController {
 
     async login(req, res, next) {
         try {
-
+            
         } catch (e) {
             
         }

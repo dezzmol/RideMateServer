@@ -1,7 +1,7 @@
 const sequelize = require('../db')
 const {DataTypes} = require('sequelize')
 
-const User = sequelize.define('user', {
+const UserModel = sequelize.define('user', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     email: {type: DataTypes.STRING, allowNull: false, unique: true},
     name: {type: DataTypes.STRING, allowNull: false},
@@ -11,14 +11,14 @@ const User = sequelize.define('user', {
     activationLink: {type: DataTypes.STRING}
 })
 
-const Token = sequelize.define('token', {
+const TokenModel = sequelize.define('token', {
     refreshToken: {type: DataTypes.STRING}
 })
 
-User.hasOne(Token)
-Token.hasOne(User)
+UserModel.hasOne(TokenModel)
+TokenModel.hasOne(UserModel)
 
 module.exports = {
-    User, 
-    Token
+    UserModel, 
+    TokenModel
 }
