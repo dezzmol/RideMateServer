@@ -18,4 +18,7 @@ const Token = sequelize.define('token', {
 User.hasOne(Token)
 Token.hasOne(User)
 
-module.exports = {User}
+module.exports = {
+    User, 
+    Token
+}
