@@ -32,7 +32,7 @@ class UserService {
     async activate(activationLink) {
         const user = await UserModel.findOne({where: {activationLink}})
         if (!user) {
-            throw ApiError.BadRequest("Uncorrect link")
+            throw ApiError.BadRequest("Incorrect link")
         }
         user.isActivated = true
         user.save()
@@ -46,7 +46,7 @@ class UserService {
 
         const isPassEquals = await bcrypt.compare(password, user.password)
         if (!isPassEquals) {
-            throw ApiError.BadRequest("Uncorrect password")
+            throw ApiError.BadRequest("Incorrect password")
         }
 
         const userDto = new UserDto(user)
