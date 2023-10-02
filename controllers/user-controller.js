@@ -1,6 +1,6 @@
 const userService = require("../services/user-service");
 const UserService = require("../services/user-service")
-const {validationResult} = require("express-validator")
+const {validationResult, cookie} = require("express-validator")
 const ApiError = require("../exceptions/api-error")
 
 class UserController {
@@ -32,7 +32,10 @@ class UserController {
 
     async logout(req, res, next) {
         try {
-
+            const {refreshToken} = req.cookies
+            const token = await userService.logout(refreshToken);
+            res.clearCookie("refreshToken");
+            return res.json(token)
         } catch (e) {
             next(e)
         }
