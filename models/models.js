@@ -16,7 +16,7 @@ const TokenModel = sequelize.define('token', {
 })
 
 UserModel.hasOne(TokenModel)
-TokenModel.hasOne(UserModel)
+TokenModel.belongsTo(UserModel)
 
 const CarModel = sequelize.define('car', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
