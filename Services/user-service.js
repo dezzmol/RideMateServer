@@ -21,10 +21,10 @@ class UserService {
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+        const token = await tokenService.saveToken(userDto.id, tokens.refreshToken);
         
         return {
-            ...tokens,
+            token: tokens.accessToken,
             user: userDto
         }
     }
@@ -52,9 +52,9 @@ class UserService {
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
 
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+        const token = await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {
-            ...tokens,
+            token: tokens.accessToken,
             user: userDto
         }
     }
@@ -79,10 +79,10 @@ class UserService {
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
-        await tokenService.saveToken(userDto.id, tokens.refreshToken);
+        const token = await tokenService.saveToken(userDto.id, tokens.refreshToken);
         
         return {
-            ...tokens,
+            token: tokens.accessToken,
             user: userDto
         }
     }
