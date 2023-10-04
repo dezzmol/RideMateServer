@@ -1,4 +1,3 @@
-const { gmail } = require("googleapis/build/src/apis/gmail");
 const nodemail = require("nodemailer")
 
 class MailService {

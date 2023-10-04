@@ -33,13 +33,15 @@ class TokenService {
         const tokenData = await TokenModel.findOne({where: {userId}})
         if (tokenData) {
             tokenData.refreshToken = refreshToken
-            return tokenData.save()
+            const user = await UserModel.findOne({where: {id: userId}})
+            user.tokenId = tokenData.id
+            user.save()
+            return tokenData
         }
         const token = await TokenModel.create({userId, refreshToken})
         const user = await UserModel.findOne({where: {id: userId}})
         user.tokenId = token.id
         user.save()
-        
         return token
     }
 
