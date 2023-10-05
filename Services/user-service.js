@@ -25,6 +25,7 @@ class UserService {
         
         return {
             token: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             user: userDto
         }
     }
@@ -55,6 +56,7 @@ class UserService {
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {
             token: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             user: userDto
         }
     }
@@ -90,6 +92,7 @@ class UserService {
         
         return {
             token: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             user: userDto
         }
     }
