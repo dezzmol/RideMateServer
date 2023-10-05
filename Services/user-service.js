@@ -60,8 +60,15 @@ class UserService {
     }
 
     async logout(refreshToken) {
-        const token = await tokenService.removeToken(refreshToken)
-        return token;
+        try {
+            if (!refreshToken) {
+                throw ApiError.BadRequest("Refresh token is undefined")
+            }
+            const token = await tokenService.removeToken(refreshToken)
+            return token;
+        } catch (e) {
+            throw ApiError.BadRequest(e.message)
+        }
     }
 
     async refresh(refreshToken) {
