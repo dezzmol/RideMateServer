@@ -16,7 +16,7 @@ class CarService {
         
     }
 
-    async getAll(brandId, classId, lowPrice, maxPrice, limit, page, offset) {
+    async getAll(brandId, classId, minPrice, maxPrice, limit, page, offset) {
         const whereParam = {}
 
         if (classId) {
@@ -43,7 +43,7 @@ class CarService {
 
         const options = {
             where: whereParam,
-            offset: (page - 1) * limit,
+            offset: offset,
             limit: parseInt(limit),
         };
 
