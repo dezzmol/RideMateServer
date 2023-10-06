@@ -1,10 +1,19 @@
-
 const ApiError = require("../exceptions/api-error")
 const CarService = require("../services/car-service")
 
 class CarController {
     async getAll(req, res, next) {
-
+        try {
+            let {brandId, classId, minPrice, maxPrice, limit, page} = req.query
+            limit = limit || 10
+            page = page || 1
+            minPrice = minPrice || 0;
+            let offset = page * limit - limit
+            const cars = await CarService.getAll(brandId, classId, minPrice, maxPrice, limit, page, offset)
+            res.json(cars)
+        } catch (e) {
+            next(e)
+        }
     }
 
     async create(req, res, next) {
