@@ -1,6 +1,7 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
 const { CarModel } = require("../models/models")
+const {Op} = require("sequelize")
 
 class CarService {
     async create(model, classId, mileage, fuelConsumption, brandId, img, price) {
@@ -13,6 +14,42 @@ class CarService {
             throw ApiError.BadRequest("Car creating error")
         }
         
+    }
+
+    async getAll(brandId, classId, lowPrice, maxPrice, limit, page, offset) {
+        const whereParam = {}
+
+        if (classId) {
+            whereParam.classId = classId;
+        }
+
+        if (brandId) {
+            whereParam.brandId = brandId;
+        }
+
+        if (lowPrice && maxPrice) {
+            whereParam.price = {
+                [Op.between]: [lowPrice, maxPrice],
+            };
+        } else if (lowPrice) {
+            whereParam.price = {
+                [Op.gte]: lowPrice,
+            };
+        } else if (maxPrice) {
+            whereParam.price = {
+                [Op.lte]: maxPrice,
+            };
+        }
+
+        const options = {
+            where: whereParam,
+            offset: (page - 1) * limit,
+            limit: parseInt(limit),
+        };
+
+        const cars = await CarModel.findAndCountAll(options)
+
+        return cars
     }
 }
 
