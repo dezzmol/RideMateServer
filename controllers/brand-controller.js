@@ -1,4 +1,4 @@
-import BrandServices from "../services/brand-services"
+const BrandServices = require("../services/brand-services")
 
 class BrandController {
     async create(req, res, next){
