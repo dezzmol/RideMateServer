@@ -4,7 +4,7 @@ const {ClassModel} = require("../models/models");
 class ClassService {
     async create(name) {
         if (!name) {
-            throw ApiError.BadRequest("")
+            throw ApiError.BadRequest("Name field is empty")
         }
 
         const isExist = ClassModel.findOne({where: {name: name}})
