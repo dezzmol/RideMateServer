@@ -24,14 +24,14 @@ class ParkingServices {
             throw ApiError.BadRequest("CarIdDoesNotExist")
         }
 
-        const carOnRentalPark = await MaintenanceParkingModel.findOne({where: {carId: carId}})
+        const carOnMaintenancePark = await MaintenanceParkingModel.findOne({where: {carId: carId}})
 
-        if (!carOnRentalPark) {
+        if (!carOnMaintenancePark) {
             throw ApiError.BadRequest("CarDoesNotExistOnRentalPark")
         }
 
-        const car = await RentalParkingModel.create({carId: carOnRentalPark.carId})
-        await MaintenanceParkingModel.destroy({where: {id: carOnRentalPark.id}})
+        const car = await RentalParkingModel.create({carId: carOnMaintenancePark.carId})
+        await MaintenanceParkingModel.destroy({where: {id: carOnMaintenancePark.id}})
 
         return car
     }
