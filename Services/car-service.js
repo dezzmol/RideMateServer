@@ -1,6 +1,6 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
-const { CarModel } = require("../models/models")
+const { CarModel, CarScheduleModel} = require("../models/models")
 const {Op} = require("sequelize")
 
 class CarService {
@@ -27,13 +27,13 @@ class CarService {
             whereParam.brandId = brandId;
         }
 
-        if (lowPrice && maxPrice) {
+        if (minPrice && maxPrice) {
             whereParam.price = {
-                [Op.between]: [lowPrice, maxPrice],
+                [Op.between]: [minPrice, maxPrice],
             };
-        } else if (lowPrice) {
+        } else if (minPrice) {
             whereParam.price = {
-                [Op.gte]: lowPrice,
+                [Op.gte]: minPrice,
             };
         } else if (maxPrice) {
             whereParam.price = {
@@ -50,6 +50,20 @@ class CarService {
         const cars = await CarModel.findAndCountAll(options)
 
         return cars
+    }
+
+    async getSchedule(carId) {
+        if (!carId) {
+            throw ApiError.BadRequest("Id field is empty")
+        }
+
+        const schedule = CarScheduleModel.findOne({where: {carId: carId}})
+
+        if (!schedule) {
+            throw ApiError.BadRequest("ScheduleDoesNotExist")
+        }
+
+        return schedule
     }
 }
 
