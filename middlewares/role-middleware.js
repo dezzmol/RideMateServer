@@ -4,7 +4,7 @@ const TokenService = require("../services/token-service");
 module.exports = function(role) {
     return async function(req, res, next) {
         try {
-            const token = req.cookies
+            const {token} = req.cookies
 
             const refreshToken = await TokenService.findToken(token)
 
