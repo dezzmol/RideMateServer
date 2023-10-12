@@ -1,5 +1,6 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
+const path = require("path")
 const { CarModel, CarScheduleModel} = require("../models/models")
 const {Op} = require("sequelize")
 
@@ -11,7 +12,7 @@ class CarService {
             const car = await CarModel.create({model, classId, mileage, fuelConsumption, brandId, img: fileName, price})
             return car;
         } catch (e) {
-            throw ApiError.BadRequest("Car creating error")
+            throw ApiError.BadRequest("Car creating error " + e)
         }
         
     }
