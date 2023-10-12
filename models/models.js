@@ -66,6 +66,17 @@ CarModel.belongsTo(MaintenanceParkingModel, {
     foreignKey: "maintenanceParkingId"
 })
 
+const CarScheduleModel = sequelize.define("carSchedule", {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    carId: {type: DataTypes.INTEGER, references: {model: CarModel, key: "id"}},
+    occupied_dates: {
+        type: DataTypes.ARRAY(DataTypes.DATE),
+    }
+})
+
+CarScheduleModel.hasOne(CarModel)
+CarModel.belongsTo(CarScheduleModel)
+
 module.exports = {
     UserModel, 
     TokenModel,
@@ -73,5 +84,6 @@ module.exports = {
     BrandModel,
     ClassModel,
     RentalParkingModel,
-    MaintenanceParkingModel
+    MaintenanceParkingModel,
+    CarScheduleModel
 }

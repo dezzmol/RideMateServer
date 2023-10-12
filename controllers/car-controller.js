@@ -27,8 +27,17 @@ class CarController {
         } catch (e) {
             next(e)
         }
-        
-        
+    }
+
+    async getSchedule(req, res, next){
+        try {
+            const carId = req.params.id
+            const schedule = await CarService.getSchedule(carId)
+
+            return res.json(schedule)
+        } catch (e) {
+            next(e)
+        }
     }
 }
 
