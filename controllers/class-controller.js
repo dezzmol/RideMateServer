@@ -5,7 +5,7 @@ class ClassController {
         try {
             const name = req.body.name
 
-            const carClass = ClassService.create(name)
+            const carClass = await ClassService.create(name)
 
             return res.json(carClass)
         } catch (e) {

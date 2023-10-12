@@ -7,13 +7,13 @@ class ClassService {
             throw ApiError.BadRequest("Name field is empty")
         }
 
-        const isExist = ClassModel.findOne({where: {name: name}})
+        const isExist = await ClassModel.findOne({where: {name}})
 
         if (isExist) {
             throw ApiError.BadRequest("This class already exist")
         }
 
-        const carClass = ClassModel.create({name: name})
+        const carClass = await ClassModel.create({name: name})
 
         return carClass
     }
