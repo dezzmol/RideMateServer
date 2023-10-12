@@ -2,6 +2,7 @@ require("dotenv").config()
 const express = require("express")
 const sequelize = require("./db")
 const cors = require("cors")
+const fileUpload = require("express-fileupload")
 const router = require("./routes/index")
 const cookieParser = require("cookie-parser")
 const errorMiddleware = require("./middlewares/error-middleware")
@@ -19,6 +20,7 @@ app.use(
 
 app.use(cookieParser())
 app.use(express.json())
+app.use(fileUpload({}))
 app.use("/api", router)
 app.use(errorMiddleware)
 
