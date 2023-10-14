@@ -1,16 +1,38 @@
 const ApiError = require("../exceptions/api-error")
+const carService = require("../services/car-service")
 const CarService = require("../services/car-service")
 
 class CarController {
     async getAll(req, res, next) {
         try {
-            let {brandId, classId, minPrice, maxPrice, limit, page} = req.query
+            let { brandId, classId, minPrice, maxPrice, limit, page } =
+                req.query
             limit = limit || 10
             page = page || 1
-            minPrice = minPrice || 0;
+            minPrice = minPrice || 0
             let offset = page * limit - limit
-            const cars = await CarService.getAll(brandId, classId, minPrice, maxPrice, limit, page, offset)
+            const cars = await CarService.getAll(
+                brandId,
+                classId,
+                minPrice,
+                maxPrice,
+                limit,
+                page,
+                offset
+            )
             res.json(cars)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async getOne(req, res, next) {
+        try {
+            const carId = req.params.id
+
+            const car = await carService.getOne(carId)
+
+            res.json(car)
         } catch (e) {
             next(e)
         }
@@ -18,10 +40,19 @@ class CarController {
 
     async create(req, res, next) {
         try {
-            const {model, classId, brandId, mileage, fuelConsumption, price} = req.body
-            const {img} = req.files
-    
-            const car = await CarService.create(model, classId, mileage, fuelConsumption, brandId, img, price)
+            const { model, classId, brandId, mileage, fuelConsumption, price } =
+                req.body
+            const { img } = req.files
+
+            const car = await CarService.create(
+                model,
+                classId,
+                mileage,
+                fuelConsumption,
+                brandId,
+                img,
+                price
+            )
 
             return res.json(car)
         } catch (e) {
@@ -29,7 +60,7 @@ class CarController {
         }
     }
 
-    async getSchedule(req, res, next){
+    async getSchedule(req, res, next) {
         try {
             const carId = req.params.id
             const schedule = await CarService.getSchedule(carId)
