@@ -3,6 +3,7 @@ const ApiError = require("../exceptions/api-error")
 const path = require("path")
 const { CarModel, CarScheduleModel } = require("../models/models")
 const { Op } = require("sequelize")
+const parkingServices = require("./parking-services")
 
 class CarService {
     async create(
@@ -26,6 +27,9 @@ class CarService {
                 img: fileName,
                 price,
             })
+
+            await parkingServices.addToRentalParking(car.id)
+
             return car
         } catch (e) {
             throw ApiError.BadRequest("Car creating error " + e)
