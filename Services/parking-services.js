@@ -1,6 +1,7 @@
 const {
     RentalParkingModel,
     MaintenanceParkingModel,
+    CarModel,
 } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 
@@ -54,7 +55,10 @@ class ParkingServices {
             throw ApiError.BadRequest("CarIdDoesNotExist")
         }
 
-        await RentalParkingModel.create({ carId: carId })
+        const rentalCar = await RentalParkingModel.create({ carId: carId })
+        const car = await CarModel.findOne({ where: { id: carId } })
+        car.rentalParkingId = rentalCar.id
+        car.save()
     }
 }
 
