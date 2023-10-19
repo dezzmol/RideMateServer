@@ -1,6 +1,7 @@
 const {
     RentalParkingModel,
-    MaintenanceParkingModel, CarModel,
+    MaintenanceParkingModel, 
+    CarModel,
 } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 const {Op} = require("sequelize");
@@ -55,7 +56,10 @@ class ParkingServices {
             throw ApiError.BadRequest("CarIdDoesNotExist")
         }
 
-        await RentalParkingModel.create({ carId: carId })
+        const rentalCar = await RentalParkingModel.create({ carId: carId })
+        const car = await CarModel.findOne({ where: { id: carId } })
+        car.rentalParkingId = rentalCar.id
+        car.save()
     }
 
     async getAllRentalParkCars(brandId, classId, minPrice, maxPrice, limit, page, offset) {
