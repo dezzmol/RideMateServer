@@ -1,15 +1,14 @@
-const {UserModel} = require("../models/models")
+const { UserModel } = require("../models/models")
 const bcrypt = require("bcrypt")
 const uuid = require("uuid")
 const MailService = require("./mail-service")
-const TokenService = require("./token-service")
 const tokenService = require("./token-service")
 const UserDto = require("../dtos/user-dto")
 const ApiError = require("../exceptions/api-error")
 
 class UserService {
     async registration(email, name, password) {
-        const candidate = await UserModel.findOne({where: {email}})
+        const candidate = await UserModel.findOne({ where: { email } })
         if (candidate) {
             throw ApiError.BadRequest("userExists")
         }
@@ -28,7 +27,7 @@ class UserService {
         )
 
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({...userDto})
+        const tokens = tokenService.generateTokens({ ...userDto })
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
@@ -39,7 +38,7 @@ class UserService {
     }
 
     async activate(activationLink) {
-        const user = await UserModel.findOne({where: {activationLink}})
+        const user = await UserModel.findOne({ where: { activationLink } })
         if (!user) {
             throw ApiError.BadRequest("IncorrectLink")
         }
@@ -48,7 +47,7 @@ class UserService {
     }
 
     async login(email, password) {
-        const user = await UserModel.findOne({where: {email}})
+        const user = await UserModel.findOne({ where: { email } })
         if (!user) {
             throw ApiError.BadRequest("userDoesntExist")
         }
@@ -59,7 +58,7 @@ class UserService {
         }
 
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({...userDto})
+        const tokens = tokenService.generateTokens({ ...userDto })
 
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
         return {
@@ -92,10 +91,10 @@ class UserService {
             throw ApiError.UnauthorizedError()
         }
 
-        const user = await UserModel.findOne({where: {userId: userData.id}})
+        const user = await UserModel.findOne({ where: { userId: userData.id } })
 
         const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({...userDto})
+        const tokens = tokenService.generateTokens({ ...userDto })
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
         return {
@@ -103,6 +102,21 @@ class UserService {
             refreshToken: tokens.refreshToken,
             user: userDto,
         }
+    }
+
+    async getData(refreshToken) {
+        if (!refreshToken) {
+            throw ApiError.UnauthorizedError()
+        }
+
+        const userData = tokenService.validateRefreshToken(refreshToken)
+        if (!userData) {
+            throw ApiError.UnauthorizedError()
+        }
+
+        const userDto = new UserDto(userData)
+
+        return userDto
     }
 }
 
