@@ -1,8 +1,9 @@
 const {
     RentalParkingModel,
-    MaintenanceParkingModel,
+    MaintenanceParkingModel, CarModel,
 } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
+const {Op} = require("sequelize");
 
 class ParkingServices {
     async moveToMaintenanceParking(carId) {
@@ -55,6 +56,44 @@ class ParkingServices {
         }
 
         await RentalParkingModel.create({ carId: carId })
+    }
+
+    async getAllRentalParkCars(brandId, classId, minPrice, maxPrice, limit, page, offset) {
+        const whereParam = {}
+
+        if (classId) {
+            whereParam.classId = classId
+        }
+
+        if (brandId) {
+            whereParam.brandId = brandId
+        }
+
+        if (minPrice && maxPrice) {
+            whereParam.price = {
+                [Op.between]: [minPrice, maxPrice],
+            }
+        } else if (minPrice) {
+            whereParam.price = {
+                [Op.gte]: minPrice,
+            }
+        } else if (maxPrice) {
+            whereParam.price = {
+                [Op.lte]: maxPrice,
+            }
+        }
+
+        const options = {
+            where: whereParam,
+            offset: offset,
+            limit: parseInt(limit),
+            page: page
+        }
+
+        const cars = await CarModel.findAndCountAll({...options, where: { rentalParkingId: { [Op.gte]: 0}}, ...options.where})
+
+        // cars.count = cars.row.length
+        return cars
     }
 }
 

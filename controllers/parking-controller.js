@@ -22,6 +22,31 @@ class ParkingController {
             next(e)
         }
     }
+
+    async getAllRentalParkCars(req, res, next) {
+        try {
+            let { brandId, classId, minPrice, maxPrice, limit, page } =
+                req.query
+            limit = limit || 10
+            page = page || 1
+            minPrice = minPrice || 0
+            let offset = page * limit - limit
+
+            const cars = await ParkingService.getAllRentalParkCars(
+                brandId,
+                classId,
+                minPrice,
+                maxPrice,
+                limit,
+                page,
+                offset
+            )
+
+            res.json(cars)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new ParkingController()
