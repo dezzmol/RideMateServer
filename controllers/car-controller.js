@@ -1,5 +1,3 @@
-const ApiError = require("../exceptions/api-error")
-const carService = require("../services/car-service")
 const CarService = require("../services/car-service")
 
 class CarController {
@@ -30,7 +28,7 @@ class CarController {
         try {
             const carId = req.params.id
 
-            const car = await carService.getOne(carId)
+            const car = await CarService.getOne(carId)
 
             res.json(car)
         } catch (e) {
@@ -55,17 +53,6 @@ class CarController {
             )
 
             return res.json(car)
-        } catch (e) {
-            next(e)
-        }
-    }
-
-    async getSchedule(req, res, next) {
-        try {
-            const carId = req.params.id
-            const schedule = await CarService.getSchedule(carId)
-
-            return res.json(schedule)
         } catch (e) {
             next(e)
         }
