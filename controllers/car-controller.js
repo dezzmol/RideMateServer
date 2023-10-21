@@ -3,7 +3,7 @@ const CarService = require("../services/car-service")
 class CarController {
     async getAll(req, res, next) {
         try {
-            let { brandId, classId, minPrice, maxPrice, limit, page } =
+            let { brandId, classId, minPrice, maxPrice, dates, limit, page } =
                 req.query
             limit = limit || 10
             page = page || 1
@@ -14,6 +14,7 @@ class CarController {
                 classId,
                 minPrice,
                 maxPrice,
+                dates,
                 limit,
                 page,
                 offset
