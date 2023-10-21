@@ -1,9 +1,10 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
 const path = require("path")
-const {CarModel, CarScheduleModel, RentalParkingModel} = require("../models/models")
-const {Op} = require("sequelize")
-const parkingServices = require("./parking-services")
+const { CarModel, CarScheduleModel } = require("../models/models")
+const { Op } = require("sequelize")
+const ParkingServices = require("./parking-services")
+const ScheduleServices = require("./schedule-services")
 
 class CarService {
     async create(
@@ -28,7 +29,8 @@ class CarService {
                 price,
             })
 
-            await parkingServices.addToRentalParking(car.id)
+            await ParkingServices.addToRentalParking(car.id)
+            await ScheduleServices.createSchedule(car.id)
 
             return car
         } catch (e) {
@@ -65,7 +67,7 @@ class CarService {
             where: whereParam,
             offset: offset,
             limit: parseInt(limit),
-            page: page
+            page: page,
         }
 
         const cars = await CarModel.findAndCountAll(options)
@@ -78,27 +80,13 @@ class CarService {
             throw ApiError.BadRequest("Id field is empty")
         }
 
-        const car = await CarModel.findOne({where: {id: carId}})
+        const car = await CarModel.findOne({ where: { id: carId } })
 
         if (!car) {
             throw ApiError.BadRequest("Car with this id doesn't exist")
         }
 
         return car
-    }
-
-    async getSchedule(carId) {
-        if (!carId) {
-            throw ApiError.BadRequest("Id field is empty")
-        }
-
-        const schedule = CarScheduleModel.findOne({where: {carId: carId}})
-
-        if (!schedule) {
-            throw ApiError.BadRequest("ScheduleDoesNotExist")
-        }
-
-        return schedule
     }
 }
 
