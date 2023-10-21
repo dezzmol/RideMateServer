@@ -38,8 +38,24 @@ class CarService {
         }
     }
 
-    async getAll(brandId, classId, minPrice, maxPrice, limit, page, offset) {
+    async getAll(
+        brandId,
+        classId,
+        minPrice,
+        maxPrice,
+        dates,
+        limit,
+        page,
+        offset
+    ) {
         const whereParam = {}
+
+        const options = {
+            where: whereParam,
+            offset: offset,
+            limit: parseInt(limit),
+            page: page,
+        }
 
         if (classId) {
             whereParam.classId = classId
@@ -63,11 +79,15 @@ class CarService {
             }
         }
 
-        const options = {
-            where: whereParam,
-            offset: offset,
-            limit: parseInt(limit),
-            page: page,
+        if (dates) {
+            options.include = {
+                model: CarScheduleModel,
+                where: {
+                    [Op.not]: {
+                        occupied_dates: { [Op.contains]: dates },
+                    },
+                },
+            }
         }
 
         const cars = await CarModel.findAndCountAll(options)
