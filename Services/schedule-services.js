@@ -42,6 +42,13 @@ class ScheduleServices {
         }
 
         const schedule = await CarScheduleModel.findOne({ where: { carId } })
+        const isDatesBusy = schedule.occupied_dates.some(
+            (date) => datesToBook.indexOf(date) >= 0
+        )
+        if (isDatesBusy) {
+            throw ApiError.BadRequest("Date(s) is/are already booked")
+        }
+
         schedule.occupied_dates = [...schedule.occupied_dates, ...datesToBook]
         schedule.save()
 
