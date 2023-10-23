@@ -90,6 +90,21 @@ const CarScheduleModel = sequelize.define("carSchedule", {
 CarScheduleModel.hasOne(CarModel)
 CarModel.belongsTo(CarScheduleModel)
 
+const UserHistoryModel = sequelize.define("userHistory", {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    carId: {
+        type: DataTypes.INTEGER,
+        references: { model: CarModel, key: "id" },
+    },
+    occupied_dates: {
+        type: DataTypes.ARRAY(DataTypes.DATEONLY),
+    },
+    totalPrice: { type: DataTypes.INTEGER, allowNull: false },
+})
+
+UserModel.hasOne(UserHistoryModel)
+UserHistoryModel.belongsTo(UserModel)
+
 module.exports = {
     UserModel,
     TokenModel,
@@ -99,4 +114,5 @@ module.exports = {
     RentalParkingModel,
     MaintenanceParkingModel,
     CarScheduleModel,
+    UserHistoryModel,
 }
