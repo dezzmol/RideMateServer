@@ -7,6 +7,7 @@ const brandRouter = require("./brandRouter")
 const classRouter = require("./classRouter")
 const parkingRouter = require("./parkingRouter")
 const scheduleRouter = require("./scheduleRouter")
+const historyRouter = require("./historyRouter")
 
 router.use("/user", userRouter)
 router.use("/cars", cartRouter)
@@ -14,5 +15,6 @@ router.use("/brand", brandRouter)
 router.use("/class", classRouter)
 router.use("/parking", parkingRouter)
 router.use("/schedule", scheduleRouter)
+router.use("/history", historyRouter)
 
 module.exports = router
