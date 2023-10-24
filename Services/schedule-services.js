@@ -54,6 +54,25 @@ class ScheduleServices {
 
         return schedule
     }
+
+    async deleteBookingDates(carId, datesToRemove) {
+        if (!carId) {
+            throw ApiError.BadRequest("carId field is empty")
+        }
+        if (!datesToRemove) {
+            throw ApiError.BadRequest("No dates specified")
+        }
+
+        const schedule = await CarScheduleModel.findOne({ where: { carId } })
+        const filteredDates = schedule.occupied_dates.filter(
+            (date) => !datesToRemove.includes(date)
+        )
+
+        schedule.occupied_dates = filteredDates
+        schedule.save()
+
+        return schedule
+    }
 }
 
 module.exports = new ScheduleServices()
