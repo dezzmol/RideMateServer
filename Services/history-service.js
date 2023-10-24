@@ -37,6 +37,18 @@ class HistoryService {
 
         return userHistory
     }
+
+    async cancelRental(historyId) {
+        if (!historyId) {
+            throw ApiError.BadRequest("historyId field is empty")
+        }
+
+        const history = await UserHistoryModel.destroy({
+            where: { id: historyId },
+        })
+
+        return history
+    }
 }
 
 module.exports = new HistoryService()
