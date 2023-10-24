@@ -1,7 +1,18 @@
 const { UserHistoryModel, CarModel } = require("../models/models")
+const ApiError = require("../exceptions/api-error")
 
 class HistoryService {
-    async getAll() {}
+    async getAll(userId) {
+        if (!userId) {
+            throw ApiError.BadRequest("userId field is empty")
+        }
+
+        const history = await UserHistoryModel.findAndCountAll({
+            where: { userId },
+        })
+
+        return history
+    }
 
     async addToHistory(carId, userId, datesToBook) {
         if (!carId) {
