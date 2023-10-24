@@ -2,11 +2,16 @@ const HistoryService = require("../Services/history-service")
 const ScheduleService = require("../Services/schedule-services")
 
 class HistoryController {
-
     async getAll(req, res, next) {
         try {
             const userId = req.params.userId
             const history = await HistoryService.getAll(userId)
+
+            return res.json(history)
+        } catch (e) {
+            next(e)
+        }
+    }
 
     async cancelRental(req, res, next) {
         try {
@@ -14,7 +19,6 @@ class HistoryController {
 
             const history = await HistoryService.cancelRental(historyId)
             await ScheduleService.deleteBookingDates(carId, datesToRemove)
-
 
             return res.json(history)
         } catch (e) {
