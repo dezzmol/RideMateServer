@@ -15,7 +15,8 @@ class ScheduleController {
 
     async setBookingDates(req, res, next) {
         try {
-            const { carId, userId, datesToBook } = req.body
+            const { carId, datesToBook } = req.body
+            const { id: userId } = req.user
             const schedule = await ScheduleServices.setBookingDates(
                 carId,
                 datesToBook

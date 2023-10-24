@@ -4,7 +4,7 @@ const ScheduleService = require("../Services/schedule-services")
 class HistoryController {
     async getAll(req, res, next) {
         try {
-            const userId = req.params.userId
+            const { id: userId } = req.user
             const history = await HistoryService.getAll(userId)
 
             return res.json(history)
