@@ -8,6 +8,7 @@ const classRouter = require("./classRouter")
 const parkingRouter = require("./parkingRouter")
 const scheduleRouter = require("./scheduleRouter")
 const historyRouter = require("./historyRouter")
+const dataChangeRouter = require("./dataChangeRouter")
 
 router.use("/user", userRouter)
 router.use("/cars", cartRouter)
@@ -16,5 +17,6 @@ router.use("/class", classRouter)
 router.use("/parking", parkingRouter)
 router.use("/schedule", scheduleRouter)
 router.use("/history", historyRouter)
+router.use("/change", dataChangeRouter)
 
 module.exports = router
