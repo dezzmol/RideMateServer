@@ -1,9 +1,9 @@
 const { UserModel } = require("../models/models")
 const MailService = require("./mail-service")
-const UserDto = require("../dtos/user-dto")
 const TokenService = require("./token-service")
-const uuid = require("uuid")
+const UserDto = require("../dtos/user-dto")
 const ApiError = require("../exceptions/api-error")
+const bcrypt = require("bcrypt")
 
 class DataChangeService {
     async changeEmail(userId, password, newEmail) {
@@ -17,12 +17,8 @@ class DataChangeService {
             throw ApiError.BadRequest("newEmail field is empty")
         }
 
-        const activationLink = uuid.v4()
-
         const user = await UserModel.findOne({ where: { id: userId } })
         user.email = newEmail
-        user.activationLink = activationLink
-        user.isActivated = false
         user.save()
 
         await MailService.sendActivationMail(
