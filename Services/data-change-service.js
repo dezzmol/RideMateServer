@@ -4,6 +4,7 @@ const TokenService = require("./token-service")
 const UserDto = require("../dtos/user-dto")
 const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
+const uuid = require("uuid")
 
 class DataChangeService {
     async changeEmail(userId, password, newEmail) {
@@ -23,7 +24,10 @@ class DataChangeService {
             throw ApiError.BadRequest("incorrectPassword")
         }
 
+        const activationLink = uuid.v4()
         user.email = newEmail
+        user.activationLink = activationLink
+        user.isActivated = false
         user.save()
 
         await MailService.sendActivationMail(
