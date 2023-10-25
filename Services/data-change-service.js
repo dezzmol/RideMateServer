@@ -18,6 +18,11 @@ class DataChangeService {
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
+        const isPassEquals = await bcrypt.compare(password, user.password)
+        if (!isPassEquals) {
+            throw ApiError.BadRequest("incorrectPassword")
+        }
+
         user.email = newEmail
         user.save()
 
