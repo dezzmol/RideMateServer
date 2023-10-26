@@ -6,10 +6,10 @@ class MailService {
             service: "gmail",
             auth: {
                 user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASSWORD
-            }
+                pass: process.env.SMTP_PASSWORD,
+            },
         })
-        console.log(this.transporter);
+        console.log(this.transporter)
     }
 
     async sendActivationMail(to, link) {
@@ -17,14 +17,29 @@ class MailService {
             from: process.env.SMTP_USER,
             to,
             subject: "Activate acc to " + process.env.API_URL,
-            text: '',
-            html:
-                `
+            text: "",
+            html: `
                     <div>
                         <h1>Click to the link for activation</h1>
                         <a href="${link}">${link}</a>
                     </div>
-                `
+                `,
+        })
+    }
+
+    async sendPasswordChangeMail(to, userName, link) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: "Password reset",
+            text: "",
+            html: `
+                <div>
+                    <h1>Hello ${userName},</h1>
+                    <b>you have requested a password change. If this was you, then click on the link. Otherwise, ignore this message</b>
+                    <a href="${link}">Change password</a>
+                </div>
+            `,
         })
     }
 
@@ -32,12 +47,12 @@ class MailService {
         return new Promise((resolve, reject) => {
             oAuth2Client.getAccessToken((err, token) => {
                 if (err) {
-                    reject(err);
+                    reject(err)
                 } else {
-                    resolve(token);
+                    resolve(token)
                 }
-            });
-        });
+            })
+        })
     }
 }
 
