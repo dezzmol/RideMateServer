@@ -22,6 +22,37 @@ class DataChangeController {
             next(e)
         }
     }
+
+    async changePasswordRequest(req, res, next) {
+        try {
+            const { id: userId } = req.user
+
+            const requestPasswordChange =
+                await DataChangeService.changePasswordRequest(userId)
+
+            return res.json(requestPasswordChange)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async changePassword(req, res, next) {
+        try {
+            const { id: userId } = req.user
+            const { resetToken, password, newPassword } = req.body
+
+            const changePassword = await DataChangeService.changePassword(
+                userId,
+                resetToken,
+                password,
+                newPassword
+            )
+
+            return res.json(changePassword)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new DataChangeController()
