@@ -1,23 +1,32 @@
 const DataChangeService = require("../Services/data-change-service")
 
 class DataChangeController {
+    async changeEmailRequest(req, res, next) {
+        try {
+            const { id: userId } = req.user
+
+            const requestEmailChange =
+                await DataChangeService.changeEmailRequest(userId)
+
+            return res.json(requestEmailChange)
+        } catch (e) {
+            next(e)
+        }
+    }
+
     async changeEmail(req, res, next) {
         try {
             const { id: userId } = req.user
-            const { password, newEmail } = req.body
+            const { password, changeToken, newEmail } = req.body
 
-            const userData = await DataChangeService.changeEmail(
+            const changeEmail = await DataChangeService.changeEmail(
                 userId,
                 password,
+                changeToken,
                 newEmail
             )
 
-            res.cookie("refreshToken", userData.refreshToken, {
-                maxAge: 30 * 24 * 60 * 60 * 1000,
-                httpOnly: true,
-            })
-
-            return res.json({ token: userData.token })
+            return res.json(changeEmail)
         } catch (e) {
             next(e)
         }
