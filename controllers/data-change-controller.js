@@ -39,11 +39,11 @@ class DataChangeController {
     async changePassword(req, res, next) {
         try {
             const { id: userId } = req.user
-            const { resetToken, password, newPassword } = req.body
+            const { changeToken, password, newPassword } = req.body
 
             const changePassword = await DataChangeService.changePassword(
                 userId,
-                resetToken,
+                changeToken,
                 password,
                 newPassword
             )

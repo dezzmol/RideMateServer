@@ -1,4 +1,4 @@
-const { UserModel, ResetTokenModel } = require("../models/models")
+const { UserModel, PasswordChangeTokenModel } = require("../models/models")
 const MailService = require("./mail-service")
 const TokenService = require("./token-service")
 const UserDto = require("../dtos/user-dto")
@@ -53,7 +53,7 @@ class DataChangeService {
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
-        const token = await ResetTokenModel.findOne({
+        const token = await PasswordChangeTokenModel.findOne({
             where: { userId: user.id },
         })
         if (token) {
@@ -63,24 +63,24 @@ class DataChangeService {
         const resetToken = crypto.randomBytes(32).toString("hex")
         const hashedToken = await bcrypt.hash(resetToken, 4)
 
-        await ResetTokenModel.create({
+        await PasswordChangeTokenModel.create({
             userId,
-            resetToken: hashedToken,
+            changeToken: hashedToken,
         })
 
-        const link = `${process.env.API_URL}/passwordChange?resetToken=${resetToken}&userId=${user.id}`
+        const link = `${process.env.API_URL}/passwordChange?changeToken=${resetToken}&userId=${user.id}`
 
         await MailService.sendPasswordChangeMail(user.email, user.name, link)
 
         return link
     }
 
-    async changePassword(userId, resetToken, password, newPassword) {
+    async changePassword(userId, changeToken, password, newPassword) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
         }
-        if (!resetToken) {
-            throw ApiError.BadRequest("resetToken field is empty")
+        if (!changeToken) {
+            throw ApiError.BadRequest("changeToken field is empty")
         }
         if (!password) {
             throw ApiError.BadRequest("password field is empty")
@@ -89,16 +89,16 @@ class DataChangeService {
             throw ApiError.BadRequest("newPassword field is empty")
         }
 
-        const passwordResetToken = await ResetTokenModel.findOne({
+        const passwordChangeToken = await PasswordChangeTokenModel.findOne({
             where: { userId },
         })
-        if (!passwordResetToken) {
+        if (!passwordChangeToken) {
             throw ApiError.BadRequest("Invalid password reset token")
         }
 
         const isValid = await bcrypt.compare(
-            resetToken,
-            passwordResetToken.resetToken
+            changeToken,
+            passwordChangeToken.changeToken
         )
         if (!isValid) {
             throw new Error("Invalid password reset token")
@@ -114,7 +114,7 @@ class DataChangeService {
         user.password = hashedPassword
         user.save()
 
-        passwordResetToken.destroy()
+        passwordChangeToken.destroy()
 
         return { message: "Password change was successful" }
     }

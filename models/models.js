@@ -18,12 +18,12 @@ const TokenModel = sequelize.define("token", {
 UserModel.hasOne(TokenModel)
 TokenModel.belongsTo(UserModel)
 
-const ResetTokenModel = sequelize.define("resetToken", {
-    resetToken: { type: DataTypes.STRING },
+const PasswordChangeTokenModel = sequelize.define("passwordChangeToken", {
+    changeToken: { type: DataTypes.STRING },
 })
 
-UserModel.hasOne(ResetTokenModel)
-ResetTokenModel.belongsTo(UserModel)
+UserModel.hasOne(PasswordChangeTokenModel)
+PasswordChangeTokenModel.belongsTo(UserModel)
 
 const CarModel = sequelize.define("car", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -115,7 +115,7 @@ UserHistoryModel.belongsTo(UserModel)
 module.exports = {
     UserModel,
     TokenModel,
-    ResetTokenModel,
+    PasswordChangeTokenModel,
     CarModel,
     BrandModel,
     ClassModel,
