@@ -1,4 +1,6 @@
 const DataChangeService = require("../Services/data-change-service")
+const UserService = require("../Services/user-service")
+const { TokenModel } = require("../models/models")
 
 class DataChangeController {
     async changeEmailRequest(req, res, next) {
@@ -25,6 +27,10 @@ class DataChangeController {
                 changeToken,
                 newEmail
             )
+
+            const { refreshToken } = req.cookies
+            await UserService.logout(refreshToken)
+            res.clearCookie("refreshToken")
 
             return res.json(changeEmail)
         } catch (e) {
@@ -56,6 +62,10 @@ class DataChangeController {
                 password,
                 newPassword
             )
+
+            const { refreshToken } = req.cookies
+            await UserService.logout(refreshToken)
+            res.clearCookie("refreshToken")
 
             return res.json(changePassword)
         } catch (e) {
