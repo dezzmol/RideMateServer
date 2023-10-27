@@ -1,4 +1,8 @@
-const { UserModel, PasswordChangeTokenModel } = require("../models/models")
+const {
+    UserModel,
+    PasswordChangeTokenModel,
+    EmailChangeTokenModel,
+} = require("../models/models")
 const MailService = require("./mail-service")
 const TokenService = require("./token-service")
 const UserDto = require("../dtos/user-dto")
@@ -8,7 +12,35 @@ const uuid = require("uuid")
 const crypto = require("crypto")
 
 class DataChangeService {
-    async changeEmail(userId, password, newEmail) {
+    async changeEmailRequest(userId) {
+        if (!userId) {
+            throw ApiError.BadRequest("userId field is empty")
+        }
+        const user = await UserModel.findOne({ where: { id: userId } })
+
+        const token = await EmailChangeTokenModel.findOne({
+            where: { userId: user.id },
+        })
+        if (token) {
+            token.destroy()
+        }
+
+        const changeToken = crypto.randomBytes(32).toString("hex")
+        const hashedToken = await bcrypt.hash(changeToken, 4)
+
+        await EmailChangeTokenModel.create({
+            userId,
+            changeToken: hashedToken,
+        })
+
+        const link = `${process.env.API_URL}/emailChange?changeToken=${changeToken}&userId=${user.id}`
+
+        await MailService.sendEmailChangeMail(user.email, user.name, link)
+
+        return link
+    }
+
+    async changeEmail(userId, password, changeToken, newEmail) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
         }
@@ -17,6 +49,21 @@ class DataChangeService {
         }
         if (!newEmail) {
             throw ApiError.BadRequest("newEmail field is empty")
+        }
+
+        const emailChangeToken = await EmailChangeTokenModel.findOne({
+            where: { userId },
+        })
+        if (!emailChangeToken) {
+            throw ApiError.BadRequest("Invalid email reset token")
+        }
+
+        const isValid = await bcrypt.compare(
+            changeToken,
+            emailChangeToken.changeToken
+        )
+        if (!isValid) {
+            throw new Error("Invalid email reset token")
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
@@ -31,20 +78,13 @@ class DataChangeService {
         user.isActivated = false
         user.save()
 
-        await MailService.sendActivationMail(
-            newEmail,
-            `${process.env.API_URL}/api/user/activate/${activationLink}`
-        )
+        const link = `${process.env.API_URL}/api/user/activate/${activationLink}`
 
-        const userDto = new UserDto(user)
-        const tokens = TokenService.generateTokens({ ...userDto })
-        await TokenService.saveToken(userDto.id, tokens.refreshToken)
+        await MailService.sendActivationMail(newEmail, link)
 
-        return {
-            token: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            user: userDto,
-        }
+        emailChangeToken.destroy()
+
+        return { message: "Email change was successful" }
     }
 
     async changePasswordRequest(userId) {
@@ -60,15 +100,15 @@ class DataChangeService {
             token.destroy()
         }
 
-        const resetToken = crypto.randomBytes(32).toString("hex")
-        const hashedToken = await bcrypt.hash(resetToken, 4)
+        const changeToken = crypto.randomBytes(32).toString("hex")
+        const hashedToken = await bcrypt.hash(changeToken, 4)
 
         await PasswordChangeTokenModel.create({
             userId,
             changeToken: hashedToken,
         })
 
-        const link = `${process.env.API_URL}/passwordChange?changeToken=${resetToken}&userId=${user.id}`
+        const link = `${process.env.API_URL}/passwordChange?changeToken=${changeToken}&userId=${user.id}`
 
         await MailService.sendPasswordChangeMail(user.email, user.name, link)
 

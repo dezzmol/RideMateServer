@@ -27,16 +27,32 @@ class MailService {
         })
     }
 
-    async sendPasswordChangeMail(to, userName, link) {
+    async sendEmailChangeMail(to, userName, link) {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
-            subject: "Password reset",
+            subject: "Email change",
             text: "",
             html: `
                 <div>
                     <h1>Hello ${userName},</h1>
-                    <b>you have requested a password change. If this was you, then click on the link. Otherwise, ignore this message</b>
+                    <b>you have requested an email change. If this was you, then click on the link.</b>
+                    <a href="${link}">Change email</a>
+                </div>
+            `,
+        })
+    }
+
+    async sendPasswordChangeMail(to, userName, link) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: "Password change",
+            text: "",
+            html: `
+                <div>
+                    <h1>Hello ${userName},</h1>
+                    <b>you have requested a password change. If this was you, then click on the link.</b>
                     <a href="${link}">Change password</a>
                 </div>
             `,
