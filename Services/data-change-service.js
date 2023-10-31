@@ -33,7 +33,7 @@ class DataChangeService {
             changeToken: hashedToken,
         })
 
-        const link = `${process.env.API_URL}/change/email?changeToken=${changeToken}&userId=${user.id}`
+        const link = `${process.env.CLIENT_URL}change/email?changeToken=${changeToken}&userId=${user.id}`
 
         await MailService.sendEmailChangeMail(user.email, user.name, link)
 
@@ -101,7 +101,7 @@ class DataChangeService {
             changeToken: hashedToken,
         })
 
-        const link = `${process.env.API_URL}/change/password?changeToken=${changeToken}&userId=${user.id}`
+        const link = `${process.env.CLIENT_URL}change/password?changeToken=${changeToken}&userId=${user.id}`
 
         await MailService.sendPasswordChangeMail(user.email, user.name, link)
 

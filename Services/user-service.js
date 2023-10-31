@@ -133,6 +133,19 @@ class UserService {
 
         return { message: "Passwords match" }
     }
+
+    async loginByRefreshToken(refreshToken) {
+        if (!refreshToken) {
+            throw ApiError.BadRequest("refreshToken field is empty")
+        }
+
+        const userData = tokenService.validateRefreshToken(refreshToken)
+        const userDto = new UserDto(userData)
+
+        const accessToken = tokenService.generateAccessToken({ ...userDto })
+
+        return accessToken
+    }
 }
 
 module.exports = new UserService()
