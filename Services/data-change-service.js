@@ -40,12 +40,9 @@ class DataChangeService {
         return link
     }
 
-    async changeEmail(userId, password, changeToken, newEmail) {
+    async changeEmail(userId, changeToken, newEmail) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
-        }
-        if (!password) {
-            throw ApiError.BadRequest("password field is empty")
         }
         if (!newEmail) {
             throw ApiError.BadRequest("newEmail field is empty")
@@ -67,10 +64,6 @@ class DataChangeService {
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
-        const isPassEquals = await bcrypt.compare(password, user.password)
-        if (!isPassEquals) {
-            throw ApiError.BadRequest("incorrectPassword")
-        }
 
         const activationLink = uuid.v4()
         user.email = newEmail
@@ -115,15 +108,12 @@ class DataChangeService {
         return link
     }
 
-    async changePassword(userId, changeToken, password, newPassword) {
+    async changePassword(userId, changeToken, newPassword) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
         }
         if (!changeToken) {
             throw ApiError.BadRequest("changeToken field is empty")
-        }
-        if (!password) {
-            throw ApiError.BadRequest("password field is empty")
         }
         if (!newPassword) {
             throw ApiError.BadRequest("newPassword field is empty")
@@ -145,10 +135,6 @@ class DataChangeService {
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
-        const isPassEquals = await bcrypt.compare(password, user.password)
-        if (!isPassEquals) {
-            throw ApiError.BadRequest("incorrectPassword")
-        }
 
         const hashedPassword = await bcrypt.hash(newPassword, 4)
         user.password = hashedPassword
