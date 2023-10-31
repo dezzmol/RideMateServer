@@ -52,10 +52,7 @@ class UserService {
             throw ApiError.BadRequest("userDoesntExist")
         }
 
-        const isPassEquals = await bcrypt.compare(password, user.password)
-        if (!isPassEquals) {
-            throw ApiError.BadRequest("incorrectPassword")
-        }
+        await this.passwordCheck(user.id, password)
 
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({ ...userDto })
@@ -117,6 +114,24 @@ class UserService {
         const userDto = new UserDto(userData)
 
         return userDto
+    }
+
+    async passwordCheck(userId, password) {
+        if (!userId) {
+            throw ApiError.BadRequest("userId field is empty")
+        }
+        if (!password) {
+            throw ApiError.BadRequest("password field is empty")
+        }
+
+        const user = await UserModel.findOne({ where: { id: userId } })
+
+        const isPassEquals = await bcrypt.compare(password, user.password)
+        if (!isPassEquals) {
+            throw ApiError.BadRequest("incorrectPassword")
+        }
+
+        return { message: "Passwords match" }
     }
 }
 
