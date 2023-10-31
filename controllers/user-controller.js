@@ -102,6 +102,20 @@ class UserController {
             next(e)
         }
     }
+
+    async loginByRefreshToken(req, res, next) {
+        try {
+            const { refreshToken } = req.cookies
+
+            const accessToken = await UserService.loginByRefreshToken(
+                refreshToken
+            )
+
+            return res.json(accessToken)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new UserController()
