@@ -4,14 +4,51 @@ const {
     EmailChangeTokenModel,
 } = require("../models/models")
 const MailService = require("./mail-service")
-const TokenService = require("./token-service")
-const UserDto = require("../dtos/user-dto")
 const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
 const uuid = require("uuid")
-const crypto = require("crypto")
 
 class DataChangeService {
+    async verifyToken(emailChangeToken, passwordChangeToken, userId) {
+        if (emailChangeToken) {
+            const changeToken = await EmailChangeTokenModel.findOne({
+                where: { userId },
+            })
+            if (!changeToken) {
+                throw ApiError.BadRequest("InvalidEmailToken")
+            }
+
+            const isValid = await bcrypt.compare(
+                emailChangeToken,
+                changeToken.changeToken
+            )
+            if (!isValid) {
+                throw new Error("InvalidEmailToken")
+            }
+
+            return { message: "Token for email change is valid" }
+        }
+
+        if (passwordChangeToken) {
+            const changeToken = await PasswordChangeTokenModel.findOne({
+                where: { userId },
+            })
+            if (!changeToken) {
+                throw ApiError.BadRequest("InvalidPasswordToken")
+            }
+
+            const isValid = await bcrypt.compare(
+                passwordChangeToken,
+                changeToken.changeToken
+            )
+            if (!isValid) {
+                throw new Error("InvalidPasswordToken")
+            }
+
+            return { message: "Token for password change is valid" }
+        }
+    }
+
     async changeEmailRequest(userId) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
@@ -25,7 +62,9 @@ class DataChangeService {
             token.destroy()
         }
 
-        const changeToken = crypto.randomBytes(32).toString("hex")
+        const changeToken = Math.floor(
+            100000 + Math.random() * 900000
+        ).toString()
         const hashedToken = await bcrypt.hash(changeToken, 4)
 
         await EmailChangeTokenModel.create({
@@ -33,14 +72,16 @@ class DataChangeService {
             changeToken: hashedToken,
         })
 
-        const link = `${process.env.CLIENT_URL}change/email?changeToken=${changeToken}&userId=${user.id}`
+        await MailService.sendEmailChangeMail(
+            user.email,
+            user.name,
+            changeToken
+        )
 
-        await MailService.sendEmailChangeMail(user.email, user.name, link)
-
-        return link
+        return changeToken
     }
 
-    async changeEmail(userId, changeToken, newEmail) {
+    async changeEmail(userId, newEmail) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
         }
@@ -52,15 +93,7 @@ class DataChangeService {
             where: { userId },
         })
         if (!emailChangeToken) {
-            throw ApiError.BadRequest("Invalid email reset token")
-        }
-
-        const isValid = await bcrypt.compare(
-            changeToken,
-            emailChangeToken.changeToken
-        )
-        if (!isValid) {
-            throw new Error("Invalid email reset token")
+            throw ApiError.BadRequest("InvalidEmailToken")
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
@@ -93,7 +126,9 @@ class DataChangeService {
             token.destroy()
         }
 
-        const changeToken = crypto.randomBytes(32).toString("hex")
+        const changeToken = Math.floor(
+            100000 + Math.random() * 900000
+        ).toString()
         const hashedToken = await bcrypt.hash(changeToken, 4)
 
         await PasswordChangeTokenModel.create({
@@ -101,19 +136,18 @@ class DataChangeService {
             changeToken: hashedToken,
         })
 
-        const link = `${process.env.CLIENT_URL}change/password?changeToken=${changeToken}&userId=${user.id}`
+        await MailService.sendPasswordChangeMail(
+            user.email,
+            user.name,
+            changeToken
+        )
 
-        await MailService.sendPasswordChangeMail(user.email, user.name, link)
-
-        return link
+        return changeToken
     }
 
-    async changePassword(userId, changeToken, newPassword) {
+    async changePassword(userId, newPassword) {
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
-        }
-        if (!changeToken) {
-            throw ApiError.BadRequest("changeToken field is empty")
         }
         if (!newPassword) {
             throw ApiError.BadRequest("newPassword field is empty")
@@ -123,15 +157,7 @@ class DataChangeService {
             where: { userId },
         })
         if (!passwordChangeToken) {
-            throw ApiError.BadRequest("Invalid password reset token")
-        }
-
-        const isValid = await bcrypt.compare(
-            changeToken,
-            passwordChangeToken.changeToken
-        )
-        if (!isValid) {
-            throw new Error("Invalid password reset token")
+            throw ApiError.BadRequest("InvalidPasswordToken")
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })

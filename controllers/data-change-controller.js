@@ -3,6 +3,23 @@ const UserService = require("../Services/user-service")
 const { TokenModel } = require("../models/models")
 
 class DataChangeController {
+    async verifyToken(req, res, next) {
+        try {
+            const { id: userId } = req.user
+            const { emailChangeToken, passwordChangeToken } = req.body
+
+            const tokenVerificationRes = await DataChangeService.verifyToken(
+                emailChangeToken,
+                passwordChangeToken,
+                userId
+            )
+
+            return res.json(tokenVerificationRes)
+        } catch (e) {
+            next(e)
+        }
+    }
+
     async changeEmailRequest(req, res, next) {
         try {
             const { id: userId } = req.user
@@ -19,12 +36,10 @@ class DataChangeController {
     async changeEmail(req, res, next) {
         try {
             const { id: userId } = req.user
-            const { password, changeToken, newEmail } = req.body
+            const { newEmail } = req.body
 
             const changeEmail = await DataChangeService.changeEmail(
                 userId,
-                password,
-                changeToken,
                 newEmail
             )
 
@@ -54,11 +69,10 @@ class DataChangeController {
     async changePassword(req, res, next) {
         try {
             const { id: userId } = req.user
-            const { changeToken, newPassword } = req.body
+            const { newPassword } = req.body
 
             const changePassword = await DataChangeService.changePassword(
                 userId,
-                changeToken,
                 newPassword
             )
 
