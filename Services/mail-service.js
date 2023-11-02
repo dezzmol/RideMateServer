@@ -27,7 +27,7 @@ class MailService {
         })
     }
 
-    async sendEmailChangeMail(to, userName, link) {
+    async sendEmailChangeMail(to, userName, code) {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
@@ -36,14 +36,14 @@ class MailService {
             html: `
                 <div>
                     <h1>Hello ${userName},</h1>
-                    <b>you have requested an email change. If this was you, then click on the link.</b>
-                    <a href="${link}">Change email</a>
+                    <b>you have requested a mail change. Here is your code to verify your identity:</b>
+                    <b>${code}</b>
                 </div>
             `,
         })
     }
 
-    async sendPasswordChangeMail(to, userName, link) {
+    async sendPasswordChangeMail(to, userName, code) {
         await this.transporter.sendMail({
             from: process.env.SMTP_USER,
             to,
@@ -52,8 +52,8 @@ class MailService {
             html: `
                 <div>
                     <h1>Hello ${userName},</h1>
-                    <b>you have requested a password change. If this was you, then click on the link.</b>
-                    <a href="${link}">Change password</a>
+                    <b>you have requested a password change. Here is your code to verify your identity:</b>
+                    <b>${code}</b>
                 </div>
             `,
         })
