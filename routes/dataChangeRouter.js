@@ -4,6 +4,7 @@ const DataChangeController = require("../controllers/data-change-controller")
 const authMiddleware = require("../middlewares/auth-middleware")
 const { body } = require("express-validator")
 
+router.post("/verifyToken", authMiddleware, DataChangeController.verifyToken)
 router.post(
     "/emailRequest",
     authMiddleware,
