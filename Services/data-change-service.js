@@ -96,6 +96,13 @@ class DataChangeService {
             throw ApiError.BadRequest("InvalidEmailToken")
         }
 
+        const candidate = await UserModel.findOne({
+            where: { email: newEmail },
+        })
+        if (candidate) {
+            throw ApiError.BadRequest("userExists")
+        }
+
         const user = await UserModel.findOne({ where: { id: userId } })
 
         const activationLink = uuid.v4()
