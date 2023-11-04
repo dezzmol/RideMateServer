@@ -23,7 +23,7 @@ class DataChangeService {
                 changeToken.changeToken
             )
             if (!isValid) {
-                throw new Error("invalidEmailToken")
+                throw ApiError.BadRequest("invalidEmailToken")
             }
 
             return { message: "Token for email change is valid" }
@@ -42,7 +42,7 @@ class DataChangeService {
                 changeToken.changeToken
             )
             if (!isValid) {
-                throw new Error("invalidPasswordToken")
+                throw ApiError.BadRequest("invalidPasswordToken")
             }
 
             return { message: "Token for password change is valid" }
