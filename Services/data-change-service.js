@@ -15,7 +15,7 @@ class DataChangeService {
                 where: { userId },
             })
             if (!changeToken) {
-                throw ApiError.BadRequest("InvalidEmailToken")
+                throw ApiError.BadRequest("invalidEmailToken")
             }
 
             const isValid = await bcrypt.compare(
@@ -23,7 +23,7 @@ class DataChangeService {
                 changeToken.changeToken
             )
             if (!isValid) {
-                throw new Error("InvalidEmailToken")
+                throw new Error("invalidEmailToken")
             }
 
             return { message: "Token for email change is valid" }
@@ -34,7 +34,7 @@ class DataChangeService {
                 where: { userId },
             })
             if (!changeToken) {
-                throw ApiError.BadRequest("InvalidPasswordToken")
+                throw ApiError.BadRequest("invalidPasswordToken")
             }
 
             const isValid = await bcrypt.compare(
@@ -42,7 +42,7 @@ class DataChangeService {
                 changeToken.changeToken
             )
             if (!isValid) {
-                throw new Error("InvalidPasswordToken")
+                throw new Error("invalidPasswordToken")
             }
 
             return { message: "Token for password change is valid" }
