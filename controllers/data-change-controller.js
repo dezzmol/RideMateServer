@@ -85,6 +85,19 @@ class DataChangeController {
             next(e)
         }
     }
+
+    async passwordRecoveryRequest(req, res, next) {
+        try {
+            const { email } = req.body
+
+            const passwordRecoveryRequest =
+                await DataChangeService.passwordRecoveryRequest(email)
+
+            return res.json(passwordRecoveryRequest)
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new DataChangeController()
