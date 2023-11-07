@@ -27,5 +27,9 @@ router.put(
     authMiddleware,
     DataChangeController.changePassword
 )
+router.post(
+    "/passwordRecoveryRequest",
+    DataChangeController.passwordRecoveryRequest
+)
 
 module.exports = router
