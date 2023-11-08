@@ -31,5 +31,10 @@ router.post(
     "/passwordRecoveryRequest",
     DataChangeController.passwordRecoveryRequest
 )
+router.put(
+    "/passwordRecovery",
+    body("newPassword").isLength({ min: 5, max: 32 }),
+    DataChangeController.passwordRecovery
+)
 
 module.exports = router
