@@ -1,6 +1,5 @@
 const DataChangeService = require("../Services/data-change-service")
 const UserService = require("../Services/user-service")
-const { TokenModel } = require("../models/models")
 
 class DataChangeController {
     async verifyToken(req, res, next) {
@@ -94,6 +93,19 @@ class DataChangeController {
                 await DataChangeService.passwordRecoveryRequest(email)
 
             return res.json(passwordRecoveryRequest)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async passwordRecovery(req, res, next) {
+        try {
+            const { newPassword, email } = req.body
+
+            const passwordRecoveryRes =
+                await DataChangeService.passwordRecovery(newPassword, email)
+
+            return res.json(passwordRecoveryRes)
         } catch (e) {
             next(e)
         }
