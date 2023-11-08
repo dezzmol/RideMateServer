@@ -78,7 +78,7 @@ class DataChangeService {
             changeToken
         )
 
-        return changeToken
+        return { message: "Token was sent successfully" }
     }
 
     async changeEmail(userId, newEmail) {
@@ -149,7 +149,7 @@ class DataChangeService {
             changeToken
         )
 
-        return changeToken
+        return { message: "Token was sent successfully" }
     }
 
     async changePassword(userId, newPassword) {
