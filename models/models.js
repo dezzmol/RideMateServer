@@ -32,6 +32,11 @@ const EmailChangeTokenModel = sequelize.define("emailChangeToken", {
 UserModel.hasOne(EmailChangeTokenModel)
 EmailChangeTokenModel.belongsTo(UserModel)
 
+const PasswordRecoveryToken = sequelize.define("passwordRecoveryToken", {
+    recoveryToken: { type: DataTypes.STRING },
+    email: { type: DataTypes.STRING },
+})
+
 const CarModel = sequelize.define("car", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     model: { type: DataTypes.STRING, allowNull: false },
@@ -124,6 +129,7 @@ module.exports = {
     TokenModel,
     PasswordChangeTokenModel,
     EmailChangeTokenModel,
+    PasswordRecoveryToken,
     CarModel,
     BrandModel,
     ClassModel,

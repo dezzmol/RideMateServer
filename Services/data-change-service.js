@@ -2,6 +2,7 @@ const {
     UserModel,
     PasswordChangeTokenModel,
     EmailChangeTokenModel,
+    PasswordRecoveryToken,
 } = require("../models/models")
 const MailService = require("./mail-service")
 const ApiError = require("../exceptions/api-error")
@@ -176,6 +177,31 @@ class DataChangeService {
         passwordChangeToken.destroy()
 
         return { message: "Password change was successful" }
+    }
+
+    async passwordRecoveryRequest(email) {
+        if (!email) {
+            throw ApiError.BadRequest("email field is empty")
+        }
+
+        const token = await PasswordRecoveryToken.findOne({ where: { email } })
+        if (token) {
+            token.destroy()
+        }
+
+        const recoveryToken = Math.floor(
+            100000 + Math.random() * 900000
+        ).toString()
+        const hashedToken = await bcrypt.hash(recoveryToken, 4)
+
+        await PasswordRecoveryToken.create({
+            email,
+            recoveryToken: hashedToken,
+        })
+
+        await MailService.sendPasswordRecoveryMail(email, recoveryToken)
+
+        return recoveryToken
     }
 }
 

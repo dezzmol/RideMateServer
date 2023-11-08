@@ -59,6 +59,22 @@ class MailService {
         })
     }
 
+    async sendPasswordRecoveryMail(to, code) {
+        await this.transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to,
+            subject: "Password recovery",
+            text: "",
+            html: `
+                <div>
+                    <h1>Hello,</h1>
+                    <b>you have requested a password recovery. Here is your code to verify your email:</b>
+                    <b>${code}</b>
+                </div>
+            `,
+        })
+    }
+
     async getAccessToken() {
         return new Promise((resolve, reject) => {
             oAuth2Client.getAccessToken((err, token) => {
