@@ -9,6 +9,7 @@ const parkingRouter = require("./parkingRouter")
 const scheduleRouter = require("./scheduleRouter")
 const historyRouter = require("./historyRouter")
 const dataChangeRouter = require("./dataChangeRouter")
+const dataRecoveryRouter = require("./dataRecoveryRouter")
 
 router.use("/user", userRouter)
 router.use("/cars", cartRouter)
@@ -18,5 +19,6 @@ router.use("/parking", parkingRouter)
 router.use("/schedule", scheduleRouter)
 router.use("/history", historyRouter)
 router.use("/change", dataChangeRouter)
+router.use("/recover", dataRecoveryRouter)
 
 module.exports = router
