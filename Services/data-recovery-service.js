@@ -4,6 +4,32 @@ const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
 
 class DataRecoveryService {
+    async verifyToken(passwordRecoveryToken, email) {
+        if (!passwordRecoveryToken) {
+            throw ApiError.BadRequest("passwordRecoveryToken field is empty")
+        }
+        if (!email) {
+            throw ApiError.BadRequest("email field is empty")
+        }
+
+        const recoveryToken = await PasswordRecoveryTokenModel.findOne({
+            where: { email },
+        })
+        if (!recoveryToken) {
+            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
+        }
+
+        const isValid = await bcrypt.compare(
+            passwordRecoveryToken,
+            recoveryToken.recoveryToken
+        )
+        if (!isValid) {
+            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
+        }
+
+        return { message: "Token for password recovery is valid" }
+    }
+
     async passwordRecoveryRequest(email) {
         if (!email) {
             throw ApiError.BadRequest("email field is empty")
@@ -40,7 +66,7 @@ class DataRecoveryService {
             where: { email },
         })
         if (!passwordRecoveryToken) {
-            throw ApiError.BadRequest("InvalidPasswordRecoveryToken")
+            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
         }
 
         const user = await UserModel.findOne({ where: { email } })
