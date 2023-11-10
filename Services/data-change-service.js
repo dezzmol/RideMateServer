@@ -8,6 +8,8 @@ const MailService = require("./mail-service")
 const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
 const uuid = require("uuid")
+const { Op } = require("sequelize")
+const cron = require("node-cron")
 
 class DataChangeService {
     async verifyToken(emailChangeToken, passwordChangeToken, userId) {
@@ -179,5 +181,21 @@ class DataChangeService {
         return { message: "Password change was successful" }
     }
 }
+
+const deleteToken = async () => {
+    await EmailChangeTokenModel.destroy({
+        where: {
+            createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
+        },
+    })
+
+    await PasswordChangeTokenModel.destroy({
+        where: {
+            createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
+        },
+    })
+}
+
+cron.schedule("* * * * *", deleteToken)
 
 module.exports = new DataChangeService()
