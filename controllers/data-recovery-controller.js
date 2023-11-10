@@ -1,16 +1,16 @@
 const DataRecoveryService = require("../Services/data-recovery-service")
 
 class DataRecoveryController {
-    async verifyToken(req, res, next) {
+    async verifyCode(req, res, next) {
         try {
-            const { passwordRecoveryToken, email } = req.body
+            const { passwordRecoveryCode, email } = req.body
 
-            const tokenVerificationRes = await DataRecoveryService.verifyToken(
-                passwordRecoveryToken,
+            const codeVerificationRes = await DataRecoveryService.verifyCode(
+                passwordRecoveryCode,
                 email
             )
 
-            return res.json(tokenVerificationRes)
+            return res.json(codeVerificationRes)
         } catch (e) {
             next(e)
         }

@@ -1,4 +1,4 @@
-const { UserModel, PasswordRecoveryTokenModel } = require("../models/models")
+const { UserModel, PasswordRecoveryCodeModel } = require("../models/models")
 const MailService = require("./mail-service")
 const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
@@ -6,30 +6,30 @@ const { Op } = require("sequelize")
 const cron = require("node-cron")
 
 class DataRecoveryService {
-    async verifyToken(passwordRecoveryToken, email) {
-        if (!passwordRecoveryToken) {
-            throw ApiError.BadRequest("passwordRecoveryToken field is empty")
+    async verifyCode(passwordRecoveryCode, email) {
+        if (!passwordRecoveryCode) {
+            throw ApiError.BadRequest("passwordRecoveryCode field is empty")
         }
         if (!email) {
             throw ApiError.BadRequest("email field is empty")
         }
 
-        const recoveryToken = await PasswordRecoveryTokenModel.findOne({
+        const recoveryCode = await PasswordRecoveryCodeModel.findOne({
             where: { email },
         })
-        if (!recoveryToken) {
-            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
+        if (!recoveryCode) {
+            throw ApiError.BadRequest("invalidPasswordRecoveryCode")
         }
 
         const isValid = await bcrypt.compare(
-            passwordRecoveryToken,
-            recoveryToken.recoveryToken
+            passwordRecoveryCode,
+            recoveryCode.recoveryCode
         )
         if (!isValid) {
-            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
+            throw ApiError.BadRequest("invalidPasswordRecoveryCode")
         }
 
-        return { message: "Token for password recovery is valid" }
+        return { message: "Code for password recovery is valid" }
     }
 
     async passwordRecoveryRequest(email) {
@@ -37,26 +37,26 @@ class DataRecoveryService {
             throw ApiError.BadRequest("email field is empty")
         }
 
-        const token = await PasswordRecoveryTokenModel.findOne({
+        const code = await PasswordRecoveryCodeModel.findOne({
             where: { email },
         })
-        if (token) {
-            token.destroy()
+        if (code) {
+            code.destroy()
         }
 
-        const recoveryToken = Math.floor(
+        const recoveryCode = Math.floor(
             100000 + Math.random() * 900000
         ).toString()
-        const hashedToken = await bcrypt.hash(recoveryToken, 4)
+        const hashedCode = await bcrypt.hash(recoveryCode, 4)
 
-        await PasswordRecoveryTokenModel.create({
+        await PasswordRecoveryCodeModel.create({
             email,
-            recoveryToken: hashedToken,
+            recoveryCode: hashedCode,
         })
 
-        await MailService.sendPasswordRecoveryMail(email, recoveryToken)
+        await MailService.sendPasswordRecoveryMail(email, recoveryCode)
 
-        return { message: "Token was sent successfully" }
+        return { message: "Code was sent successfully" }
     }
 
     async passwordRecovery(newPassword, email) {
@@ -64,11 +64,11 @@ class DataRecoveryService {
             throw ApiError.BadRequest("newPassword field is empty")
         }
 
-        const passwordRecoveryToken = await PasswordRecoveryTokenModel.findOne({
+        const passwordRecoveryCode = await PasswordRecoveryCodeModel.findOne({
             where: { email },
         })
-        if (!passwordRecoveryToken) {
-            throw ApiError.BadRequest("invalidPasswordRecoveryToken")
+        if (!passwordRecoveryCode) {
+            throw ApiError.BadRequest("invalidPasswordRecoveryCode")
         }
 
         const user = await UserModel.findOne({ where: { email } })
@@ -77,20 +77,20 @@ class DataRecoveryService {
         user.password = hashedPassword
         user.save()
 
-        passwordRecoveryToken.destroy()
+        passwordRecoveryCode.destroy()
 
         return { message: "Password recovery was successful" }
     }
 }
 
-const deleteToken = async () => {
-    await PasswordRecoveryTokenModel.destroy({
+const deleteCode = async () => {
+    await PasswordRecoveryCodeModel.destroy({
         where: {
             createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
         },
     })
 }
 
-cron.schedule("* * * * *", deleteToken)
+cron.schedule("* * * * *", deleteCode)
 
 module.exports = new DataRecoveryService()
