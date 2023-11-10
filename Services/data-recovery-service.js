@@ -2,6 +2,8 @@ const { UserModel, PasswordRecoveryTokenModel } = require("../models/models")
 const MailService = require("./mail-service")
 const ApiError = require("../exceptions/api-error")
 const bcrypt = require("bcrypt")
+const { Op } = require("sequelize")
+const cron = require("node-cron")
 
 class DataRecoveryService {
     async verifyToken(passwordRecoveryToken, email) {
@@ -80,5 +82,15 @@ class DataRecoveryService {
         return { message: "Password recovery was successful" }
     }
 }
+
+const deleteToken = async () => {
+    await PasswordRecoveryTokenModel.destroy({
+        where: {
+            createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
+        },
+    })
+}
+
+cron.schedule("* * * * *", deleteToken)
 
 module.exports = new DataRecoveryService()
