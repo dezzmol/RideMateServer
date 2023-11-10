@@ -18,22 +18,22 @@ const TokenModel = sequelize.define("token", {
 UserModel.hasOne(TokenModel)
 TokenModel.belongsTo(UserModel)
 
-const PasswordChangeTokenModel = sequelize.define("passwordChangeToken", {
-    changeToken: { type: DataTypes.STRING },
+const PasswordChangeCodeModel = sequelize.define("passwordChangeCode", {
+    changeCode: { type: DataTypes.STRING },
 })
 
-UserModel.hasOne(PasswordChangeTokenModel)
-PasswordChangeTokenModel.belongsTo(UserModel)
+UserModel.hasOne(PasswordChangeCodeModel)
+PasswordChangeCodeModel.belongsTo(UserModel)
 
-const EmailChangeTokenModel = sequelize.define("emailChangeToken", {
-    changeToken: { type: DataTypes.STRING },
+const EmailChangeCodeModel = sequelize.define("emailChangeCode", {
+    changeCode: { type: DataTypes.STRING },
 })
 
-UserModel.hasOne(EmailChangeTokenModel)
-EmailChangeTokenModel.belongsTo(UserModel)
+UserModel.hasOne(EmailChangeCodeModel)
+EmailChangeCodeModel.belongsTo(UserModel)
 
-const PasswordRecoveryTokenModel = sequelize.define("passwordRecoveryToken", {
-    recoveryToken: { type: DataTypes.STRING },
+const PasswordRecoveryCodeModel = sequelize.define("passwordRecoveryCode", {
+    recoveryCode: { type: DataTypes.STRING },
     email: { type: DataTypes.STRING },
 })
 
@@ -127,9 +127,9 @@ UserHistoryModel.belongsTo(UserModel)
 module.exports = {
     UserModel,
     TokenModel,
-    PasswordChangeTokenModel,
-    EmailChangeTokenModel,
-    PasswordRecoveryTokenModel,
+    PasswordChangeCodeModel,
+    EmailChangeCodeModel,
+    PasswordRecoveryCodeModel,
     CarModel,
     BrandModel,
     ClassModel,
