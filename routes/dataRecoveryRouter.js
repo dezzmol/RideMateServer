@@ -3,7 +3,7 @@ const router = Router()
 const DataRecoveryController = require("../controllers/data-recovery-controller")
 const { body } = require("express-validator")
 
-router.post("/verifyToken", DataRecoveryController.verifyToken)
+router.post("/verifyCode", DataRecoveryController.verifyCode)
 router.post("/passwordRequest", DataRecoveryController.passwordRecoveryRequest)
 router.put(
     "/password",

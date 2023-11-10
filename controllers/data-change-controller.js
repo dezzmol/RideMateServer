@@ -2,18 +2,18 @@ const DataChangeService = require("../Services/data-change-service")
 const UserService = require("../Services/user-service")
 
 class DataChangeController {
-    async verifyToken(req, res, next) {
+    async verifyCode(req, res, next) {
         try {
             const { id: userId } = req.user
-            const { emailChangeToken, passwordChangeToken } = req.body
+            const { emailChangeCode, passwordChangeCode } = req.body
 
-            const tokenVerificationRes = await DataChangeService.verifyToken(
-                emailChangeToken,
-                passwordChangeToken,
+            const codeVerificationRes = await DataChangeService.verifyCode(
+                emailChangeCode,
+                passwordChangeCode,
                 userId
             )
 
-            return res.json(tokenVerificationRes)
+            return res.json(codeVerificationRes)
         } catch (e) {
             next(e)
         }

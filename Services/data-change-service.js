@@ -1,8 +1,7 @@
 const {
     UserModel,
-    PasswordChangeTokenModel,
-    EmailChangeTokenModel,
-    PasswordRecoveryTokenModel,
+    PasswordChangeCodeModel,
+    EmailChangeCodeModel,
 } = require("../models/models")
 const MailService = require("./mail-service")
 const ApiError = require("../exceptions/api-error")
@@ -12,43 +11,43 @@ const { Op } = require("sequelize")
 const cron = require("node-cron")
 
 class DataChangeService {
-    async verifyToken(emailChangeToken, passwordChangeToken, userId) {
-        if (emailChangeToken) {
-            const changeToken = await EmailChangeTokenModel.findOne({
+    async verifyCode(emailChangeCode, passwordChangeCode, userId) {
+        if (emailChangeCode) {
+            const changeCode = await EmailChangeCodeModel.findOne({
                 where: { userId },
             })
-            if (!changeToken) {
-                throw ApiError.BadRequest("invalidEmailToken")
+            if (!changeCode) {
+                throw ApiError.BadRequest("invalidEmailCode")
             }
 
             const isValid = await bcrypt.compare(
-                emailChangeToken,
-                changeToken.changeToken
+                emailChangeCode,
+                changeCode.changeCode
             )
             if (!isValid) {
-                throw ApiError.BadRequest("invalidEmailToken")
+                throw ApiError.BadRequest("invalidEmailCode")
             }
 
-            return { message: "Token for email change is valid" }
+            return { message: "Code for email change is valid" }
         }
 
-        if (passwordChangeToken) {
-            const changeToken = await PasswordChangeTokenModel.findOne({
+        if (passwordChangeCode) {
+            const changeCode = await PasswordChangeCodeModel.findOne({
                 where: { userId },
             })
-            if (!changeToken) {
-                throw ApiError.BadRequest("invalidPasswordToken")
+            if (!changeCode) {
+                throw ApiError.BadRequest("invalidPasswordCode")
             }
 
             const isValid = await bcrypt.compare(
-                passwordChangeToken,
-                changeToken.changeToken
+                passwordChangeCode,
+                changeCode.changeCode
             )
             if (!isValid) {
-                throw ApiError.BadRequest("invalidPasswordToken")
+                throw ApiError.BadRequest("invalidPasswordCode")
             }
 
-            return { message: "Token for password change is valid" }
+            return { message: "Code for password change is valid" }
         }
     }
 
@@ -58,30 +57,26 @@ class DataChangeService {
         }
         const user = await UserModel.findOne({ where: { id: userId } })
 
-        const token = await EmailChangeTokenModel.findOne({
+        const code = await EmailChangeCodeModel.findOne({
             where: { userId: user.id },
         })
-        if (token) {
-            token.destroy()
+        if (code) {
+            code.destroy()
         }
 
-        const changeToken = Math.floor(
+        const changeCode = Math.floor(
             100000 + Math.random() * 900000
         ).toString()
-        const hashedToken = await bcrypt.hash(changeToken, 4)
+        const hashedCode = await bcrypt.hash(changeCode, 4)
 
-        await EmailChangeTokenModel.create({
+        await EmailChangeCodeModel.create({
             userId,
-            changeToken: hashedToken,
+            changeCode: hashedCode,
         })
 
-        await MailService.sendEmailChangeMail(
-            user.email,
-            user.name,
-            changeToken
-        )
+        await MailService.sendEmailChangeMail(user.email, user.name, changeCode)
 
-        return { message: "Token was sent successfully" }
+        return { message: "Code was sent successfully" }
     }
 
     async changeEmail(userId, newEmail) {
@@ -92,11 +87,11 @@ class DataChangeService {
             throw ApiError.BadRequest("newEmail field is empty")
         }
 
-        const emailChangeToken = await EmailChangeTokenModel.findOne({
+        const emailChangeCode = await EmailChangeCodeModel.findOne({
             where: { userId },
         })
-        if (!emailChangeToken) {
-            throw ApiError.BadRequest("InvalidEmailToken")
+        if (!emailChangeCode) {
+            throw ApiError.BadRequest("invalidEmailCode")
         }
 
         const candidate = await UserModel.findOne({
@@ -118,7 +113,7 @@ class DataChangeService {
 
         await MailService.sendActivationMail(newEmail, link)
 
-        emailChangeToken.destroy()
+        emailChangeCode.destroy()
 
         return { message: "Email change was successful" }
     }
@@ -129,30 +124,30 @@ class DataChangeService {
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
-        const token = await PasswordChangeTokenModel.findOne({
+        const code = await PasswordChangeCodeModel.findOne({
             where: { userId: user.id },
         })
-        if (token) {
-            token.destroy()
+        if (code) {
+            code.destroy()
         }
 
-        const changeToken = Math.floor(
+        const changeCode = Math.floor(
             100000 + Math.random() * 900000
         ).toString()
-        const hashedToken = await bcrypt.hash(changeToken, 4)
+        const hashedCode = await bcrypt.hash(changeCode, 4)
 
-        await PasswordChangeTokenModel.create({
+        await PasswordChangeCodeModel.create({
             userId,
-            changeToken: hashedToken,
+            changeCode: hashedCode,
         })
 
         await MailService.sendPasswordChangeMail(
             user.email,
             user.name,
-            changeToken
+            changeCode
         )
 
-        return { message: "Token was sent successfully" }
+        return { message: "Code was sent successfully" }
     }
 
     async changePassword(userId, newPassword) {
@@ -163,11 +158,11 @@ class DataChangeService {
             throw ApiError.BadRequest("newPassword field is empty")
         }
 
-        const passwordChangeToken = await PasswordChangeTokenModel.findOne({
+        const passwordChangeCode = await PasswordChangeCodeModel.findOne({
             where: { userId },
         })
-        if (!passwordChangeToken) {
-            throw ApiError.BadRequest("InvalidPasswordToken")
+        if (!passwordChangeCode) {
+            throw ApiError.BadRequest("invalidPasswordCode")
         }
 
         const user = await UserModel.findOne({ where: { id: userId } })
@@ -176,26 +171,26 @@ class DataChangeService {
         user.password = hashedPassword
         user.save()
 
-        passwordChangeToken.destroy()
+        passwordChangeCode.destroy()
 
         return { message: "Password change was successful" }
     }
 }
 
-const deleteToken = async () => {
-    await EmailChangeTokenModel.destroy({
+const deleteCode = async () => {
+    await EmailChangeCodeModel.destroy({
         where: {
             createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
         },
     })
 
-    await PasswordChangeTokenModel.destroy({
+    await PasswordChangeCodeModel.destroy({
         where: {
             createdAt: { [Op.lte]: new Date(Date.now() - 60 * 30 * 1000) },
         },
     })
 }
 
-cron.schedule("* * * * *", deleteToken)
+cron.schedule("* * * * *", deleteCode)
 
 module.exports = new DataChangeService()
