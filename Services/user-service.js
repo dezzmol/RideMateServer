@@ -87,6 +87,7 @@ class UserService {
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError()
         }
+        const userDto = new UserDto(userData)
 
         const accessToken = tokenService.generateAccessToken({ ...userDto })
 
