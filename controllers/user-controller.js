@@ -55,12 +55,9 @@ class UserController {
     async refresh(req, res, next) {
         try {
             const { refreshToken } = req.cookies
-            const userData = await UserService.refresh(refreshToken)
-            res.cookie("refreshToken", userData.refreshToken, {
-                maxAge: 30 * 24 * 60 * 60 * 1000,
-                httpOnly: true,
-            })
-            return res.json({ token: userData.token })
+            const accessToken = await UserService.refresh(refreshToken)
+
+            return res.json({ token: accessToken })
         } catch (e) {
             next(e)
         }
@@ -98,20 +95,6 @@ class UserController {
             )
 
             return res.json(passwordCheckRes)
-        } catch (e) {
-            next(e)
-        }
-    }
-
-    async loginByRefreshToken(req, res, next) {
-        try {
-            const { refreshToken } = req.cookies
-
-            const accessToken = await UserService.loginByRefreshToken(
-                refreshToken
-            )
-
-            return res.json(accessToken)
         } catch (e) {
             next(e)
         }

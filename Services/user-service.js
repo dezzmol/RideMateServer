@@ -87,18 +87,11 @@ class UserService {
         if (!userData || !tokenFromDb) {
             throw ApiError.UnauthorizedError()
         }
+        const userDto = new UserDto(userData)
 
-        const user = await UserModel.findOne({ where: { userId: userData.id } })
+        const accessToken = tokenService.generateAccessToken({ ...userDto })
 
-        const userDto = new UserDto(user)
-        const tokens = tokenService.generateTokens({ ...userDto })
-        await tokenService.saveToken(userDto.id, tokens.refreshToken)
-
-        return {
-            token: tokens.accessToken,
-            refreshToken: tokens.refreshToken,
-            user: userDto,
-        }
+        return accessToken
     }
 
     async getData(refreshToken) {
@@ -132,19 +125,6 @@ class UserService {
         }
 
         return { message: "Passwords match" }
-    }
-
-    async loginByRefreshToken(refreshToken) {
-        if (!refreshToken) {
-            throw ApiError.BadRequest("refreshToken field is empty")
-        }
-
-        const userData = tokenService.validateRefreshToken(refreshToken)
-        const userDto = new UserDto(userData)
-
-        const accessToken = tokenService.generateAccessToken({ ...userDto })
-
-        return accessToken
     }
 }
 
