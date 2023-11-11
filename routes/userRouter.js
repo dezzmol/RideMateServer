@@ -13,7 +13,7 @@ router.post(
 router.post("/login", UserController.login)
 router.post("/logout", UserController.logout)
 router.get("/activate/:link", UserController.activate)
-router.get("/refresh", UserController.refresh)
+router.post("/refresh", UserController.refresh)
 router.get("/data", authMiddleware, UserController.getData)
 router.post("/passwordCheck", authMiddleware, UserController.passwordCheck)
 
