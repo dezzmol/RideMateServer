@@ -9,6 +9,7 @@ class HistoryService {
 
         const history = await UserHistoryModel.findAndCountAll({
             where: { userId },
+            attributes: ["id", "carId", "occupied_dates", "totalPrice"],
         })
 
         return history
