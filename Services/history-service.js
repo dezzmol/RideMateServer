@@ -1,4 +1,4 @@
-const { UserHistoryModel, CarModel } = require("../models/models")
+const { UserHistoryModel, CarModel, BrandModel } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 
 class HistoryService {
@@ -11,8 +11,14 @@ class HistoryService {
             where: { userId },
             attributes: ["id", "carId", "occupied_dates", "totalPrice"],
         })
+        const cars = await CarModel.findAll({
+            attributes: ["id", "img", "model", "brandId"],
+        })
+        const brands = await BrandModel.findAll({
+            attributes: ["id", "name"],
+        })
 
-        return history
+        return { history, cars, brands }
     }
 
     async addToHistory(carId, userId, datesToBook) {
