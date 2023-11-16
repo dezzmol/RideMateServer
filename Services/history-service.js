@@ -1,6 +1,11 @@
 const { UserHistoryModel, CarModel, BrandModel } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 
+const isBusyDates = (firstDates, secondDates) => {
+    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
+}
+
+
 class HistoryService {
     async getAll(userId) {
         if (!userId) {
@@ -21,24 +26,48 @@ class HistoryService {
         return { history, cars, brands }
     }
 
-    async addToHistory(carId, userId, datesToBook) {
+    async addToHistory(carId, userId, startDate, endDate) {
         if (!carId) {
             throw ApiError.BadRequest("carId field is empty")
         }
         if (!userId) {
             throw ApiError.BadRequest("userId field is empty")
         }
-        if (!datesToBook) {
+        if (!startDate || !endDate) {
             throw ApiError.BadRequest("No dates specified")
         }
 
+        const startDateTimestamp = Date.parse(startDate.toString())
+        const endDateTimestamp = Date.parse(endDate.toString())
+
+        if (startDateTimestamp > endDateTimestamp) {
+            throw ApiError.BadRequest("Start date can't be bigger than end date")
+        }
+
+        const existingRentals = await UserHistoryModel.findAll({
+            where: {
+                carId: carId
+            },
+        });
+
+        if (existingRentals.length > 0) {
+            existingRentals.map(existingRental => {
+                if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], existingRental.getDataValue("occupied_dates"))) {
+                    throw ApiError.BadRequest("Dates are busy")
+                }
+            })
+        }
+
         const car = await CarModel.findOne({ where: { id: carId } })
-        const totalPrice = car.price * datesToBook.length
+
+        const daysDiff = Math.ceil((new Date(endDateTimestamp) - new Date(startDateTimestamp)) / (1000 * 60 * 60 * 24));
+
+        const totalPrice = car.price * daysDiff;
 
         const userHistory = await UserHistoryModel.create({
             carId,
             userId,
-            occupied_dates: datesToBook,
+            occupied_dates: [new Date(startDateTimestamp), new Date(endDateTimestamp)],
             totalPrice,
         })
 

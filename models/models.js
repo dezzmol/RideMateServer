@@ -118,7 +118,7 @@ const UserHistoryModel = sequelize.define("userHistory", {
     occupied_dates: {
         type: DataTypes.ARRAY(DataTypes.DATEONLY),
     },
-    totalPrice: { type: DataTypes.INTEGER, allowNull: false },
+    totalPrice: { type: DataTypes.DOUBLE, allowNull: false },
 })
 
 UserModel.hasOne(UserHistoryModel)
