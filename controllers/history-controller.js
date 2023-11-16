@@ -1,6 +1,4 @@
 const HistoryService = require("../Services/history-service")
-const ScheduleService = require("../Services/schedule-services")
-const ScheduleServices = require("../services/schedule-services");
 
 class HistoryController {
     async getAll(req, res, next) {
