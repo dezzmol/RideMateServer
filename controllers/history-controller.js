@@ -16,7 +16,7 @@ class HistoryController {
         try {
             const { carId, startDate, endDate } = req.body
             const { id: userId } = req.user
-            //startDate, endDate - timestamp
+
             const rent = await HistoryService.addToHistory(carId, userId, startDate, endDate)
 
             return res.json(rent)

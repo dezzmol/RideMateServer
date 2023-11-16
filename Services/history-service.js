@@ -1,6 +1,5 @@
 const { UserHistoryModel, CarModel, BrandModel } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
-const { Op } = require('sequelize');
 
 const isBusyDates = (firstDates, secondDates) => {
     return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
@@ -38,7 +37,6 @@ class HistoryService {
             throw ApiError.BadRequest("No dates specified")
         }
 
-        //убрать потом
         const startDateTimestamp = Date.parse(startDate.toString())
         const endDateTimestamp = Date.parse(endDate.toString())
 
