@@ -5,5 +5,6 @@ const authMiddleware = require("../middlewares/auth-middleware")
 
 router.get("/", authMiddleware, HistoryController.getAll)
 router.delete("/", authMiddleware, HistoryController.cancelRental)
+router.post("/", authMiddleware, HistoryController.rentCar)
 
 module.exports = router
