@@ -2,7 +2,6 @@ const { UserHistoryModel, CarModel, BrandModel } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 
 const isBusyDates = (firstDates, secondDates) => {
-    console.log(firstDates, secondDates)
     return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
 }
 
