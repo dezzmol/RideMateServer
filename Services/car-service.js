@@ -1,10 +1,14 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
 const path = require("path")
-const { CarModel, CarScheduleModel } = require("../models/models")
-const { Op } = require("sequelize")
+const { CarModel, CarScheduleModel, UserHistoryModel} = require("../models/models")
+const { Op, Sequelize} = require("sequelize")
 const ParkingServices = require("./parking-services")
 const ScheduleServices = require("./schedule-services")
+
+const isBusyDates = (firstDates, secondDates) => {
+    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
+}
 
 class CarService {
     async create(
@@ -43,7 +47,8 @@ class CarService {
         classId,
         minPrice,
         maxPrice,
-        dates,
+        startDate,
+        endDate,
         limit,
         page,
         offset
@@ -79,20 +84,26 @@ class CarService {
             }
         }
 
-        if (dates) {
-            options.include = {
-                model: CarScheduleModel,
-                where: {
-                    [Op.not]: {
-                        occupied_dates: { [Op.contains]: dates },
-                    },
-                },
-            }
+
+        let cars = await CarModel.findAll(options)
+
+        if (startDate && endDate) {
+            const rentalCars = await UserHistoryModel.findAll()
+            const startDateTimestamp = Date.parse(startDate.toString())
+            const endDateTimestamp = Date.parse(endDate.toString())
+            rentalCars.map(rentalCar => {
+                if (cars.find(car => car.id === rentalCar.carId)) {
+                    const rentalCarDates = rentalCar.getDataValue("occupied_dates")
+                    const rentalCarStartDate = new Date(rentalCarDates[0])
+                    const rentalCarEndDate = new Date(rentalCarDates[1])
+                    if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], [rentalCarStartDate, rentalCarEndDate])) {
+                        cars = cars.filter(car => car.id !== rentalCar.carId)
+                    }
+                }
+            })
         }
 
-        const cars = await CarModel.findAndCountAll(options)
-
-        return cars
+        return {rows: cars, count: cars.length}
     }
 
     async getOne(carId) {

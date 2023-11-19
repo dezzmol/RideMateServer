@@ -50,9 +50,13 @@ class HistoryService {
             },
         });
 
+
         if (existingRentals.length > 0) {
             existingRentals.map(existingRental => {
-                if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], existingRental.getDataValue("occupied_dates"))) {
+                const existingRentalDates = existingRental.getDataValue("occupied_dates")
+                const existingRentalStartDate = new Date(existingRentalDates[0])
+                const existingRentalEndDate = new Date(existingRentalDates[1])
+                if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], [existingRentalStartDate, existingRentalEndDate])) {
                     throw ApiError.BadRequest("Dates are busy")
                 }
             })
