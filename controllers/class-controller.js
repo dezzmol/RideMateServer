@@ -40,7 +40,7 @@ class ClassController {
             const { classId } = req.body
 
             const deletionRes = await ClassService.delete(classId)
-            console.log(deletionRes)
+
             if (deletionRes === 1) {
                 return res.json(
                     `The class with ID ${classId} was deleted successfully`
