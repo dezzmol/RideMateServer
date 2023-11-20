@@ -4,7 +4,6 @@ const path = require("path")
 const { CarModel, UserHistoryModel } = require("../models/models")
 const { Op } = require("sequelize")
 
-
 const isBusyDates = (firstDates, secondDates) => {
     return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0])
 }
@@ -120,6 +119,16 @@ class CarService {
         if (!car) {
             throw ApiError.BadRequest("Car with this id doesn't exist")
         }
+
+        return car
+    }
+
+    async delete(carId) {
+        if (!carId) {
+            throw ApiError.BadRequest("Id field is empty")
+        }
+
+        const car = await CarModel.destroy({ where: { id: carId } })
 
         return car
     }
