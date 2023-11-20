@@ -1,13 +1,12 @@
 const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
 const path = require("path")
-const { CarModel, CarScheduleModel, UserHistoryModel} = require("../models/models")
-const { Op, Sequelize} = require("sequelize")
+const { CarModel, UserHistoryModel } = require("../models/models")
+const { Op, Sequelize } = require("sequelize")
 const ParkingServices = require("./parking-services")
-const ScheduleServices = require("./schedule-services")
 
 const isBusyDates = (firstDates, secondDates) => {
-    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
+    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0])
 }
 
 class CarService {
@@ -34,7 +33,6 @@ class CarService {
             })
 
             await ParkingServices.addToRentalParking(car.id)
-            await ScheduleServices.createSchedule(car.id)
 
             return car
         } catch (e) {
@@ -84,26 +82,34 @@ class CarService {
             }
         }
 
-
         let cars = await CarModel.findAll(options)
 
         if (startDate && endDate) {
             const rentalCars = await UserHistoryModel.findAll()
             const startDateTimestamp = Date.parse(startDate.toString())
             const endDateTimestamp = Date.parse(endDate.toString())
-            rentalCars.map(rentalCar => {
-                if (cars.find(car => car.id === rentalCar.carId)) {
-                    const rentalCarDates = rentalCar.getDataValue("occupied_dates")
+            rentalCars.map((rentalCar) => {
+                if (cars.find((car) => car.id === rentalCar.carId)) {
+                    const rentalCarDates =
+                        rentalCar.getDataValue("occupied_dates")
                     const rentalCarStartDate = new Date(rentalCarDates[0])
                     const rentalCarEndDate = new Date(rentalCarDates[1])
-                    if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], [rentalCarStartDate, rentalCarEndDate])) {
-                        cars = cars.filter(car => car.id !== rentalCar.carId)
+                    if (
+                        isBusyDates(
+                            [
+                                new Date(startDateTimestamp),
+                                new Date(endDateTimestamp),
+                            ],
+                            [rentalCarStartDate, rentalCarEndDate]
+                        )
+                    ) {
+                        cars = cars.filter((car) => car.id !== rentalCar.carId)
                     }
                 }
             })
         }
 
-        return {rows: cars, count: cars.length}
+        return { rows: cars, count: cars.length }
     }
 
     async getOne(carId) {
