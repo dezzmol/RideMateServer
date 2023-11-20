@@ -2,8 +2,8 @@ const uuid = require("uuid")
 const ApiError = require("../exceptions/api-error")
 const path = require("path")
 const { CarModel, UserHistoryModel } = require("../models/models")
-const { Op, Sequelize } = require("sequelize")
-const ParkingServices = require("./parking-services")
+const { Op } = require("sequelize")
+
 
 const isBusyDates = (firstDates, secondDates) => {
     return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0])
@@ -31,8 +31,6 @@ class CarService {
                 img: fileName,
                 price,
             })
-
-            await ParkingServices.addToRentalParking(car.id)
 
             return car
         } catch (e) {

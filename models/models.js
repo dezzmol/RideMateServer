@@ -42,14 +42,7 @@ const CarModel = sequelize.define("car", {
     model: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
     mileage: { type: DataTypes.INTEGER, allowNull: false },
-    lastMileageOnTS: { type: DataTypes.INTEGER, defaultValue: 0 },
     fuelConsumption: { type: DataTypes.DOUBLE, allowNull: false },
-    //0 - rentalParking, 1 - maintenanceParking
-    technicalCondition: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-    },
     img: { type: DataTypes.STRING, allowNull: false },
 })
 
@@ -69,31 +62,6 @@ CarModel.belongsTo(BrandModel)
 ClassModel.hasMany(CarModel)
 CarModel.belongsTo(ClassModel)
 
-const RentalParkingModel = sequelize.define("rentalParking", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    carId: {
-        type: DataTypes.INTEGER,
-        references: { model: CarModel, key: "id" },
-    },
-})
-
-const MaintenanceParkingModel = sequelize.define("maintenanceParking", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    carId: {
-        type: DataTypes.INTEGER,
-        references: { model: CarModel, key: "id" },
-    },
-})
-
-RentalParkingModel.hasOne(CarModel)
-CarModel.belongsTo(RentalParkingModel, {
-    foreignKey: "rentalParkingId",
-})
-
-MaintenanceParkingModel.hasOne(CarModel)
-CarModel.belongsTo(MaintenanceParkingModel, {
-    foreignKey: "maintenanceParkingId",
-})
 
 const UserHistoryModel = sequelize.define("userHistory", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -119,7 +87,5 @@ module.exports = {
     CarModel,
     BrandModel,
     ClassModel,
-    RentalParkingModel,
-    MaintenanceParkingModel,
     UserHistoryModel,
 }
