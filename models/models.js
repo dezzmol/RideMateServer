@@ -69,32 +69,6 @@ CarModel.belongsTo(BrandModel)
 ClassModel.hasMany(CarModel)
 CarModel.belongsTo(ClassModel)
 
-const RentalParkingModel = sequelize.define("rentalParking", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    carId: {
-        type: DataTypes.INTEGER,
-        references: { model: CarModel, key: "id" },
-    },
-})
-
-const MaintenanceParkingModel = sequelize.define("maintenanceParking", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    carId: {
-        type: DataTypes.INTEGER,
-        references: { model: CarModel, key: "id" },
-    },
-})
-
-RentalParkingModel.hasOne(CarModel)
-CarModel.belongsTo(RentalParkingModel, {
-    foreignKey: "rentalParkingId",
-})
-
-MaintenanceParkingModel.hasOne(CarModel)
-CarModel.belongsTo(MaintenanceParkingModel, {
-    foreignKey: "maintenanceParkingId",
-})
-
 const CarScheduleModel = sequelize.define("carSchedule", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     carId: {
@@ -133,8 +107,6 @@ module.exports = {
     CarModel,
     BrandModel,
     ClassModel,
-    RentalParkingModel,
-    MaintenanceParkingModel,
     CarScheduleModel,
     UserHistoryModel,
 }
