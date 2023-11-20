@@ -95,20 +95,6 @@ CarModel.belongsTo(MaintenanceParkingModel, {
     foreignKey: "maintenanceParkingId",
 })
 
-const CarScheduleModel = sequelize.define("carSchedule", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    carId: {
-        type: DataTypes.INTEGER,
-        references: { model: CarModel, key: "id" },
-    },
-    occupied_dates: {
-        type: DataTypes.ARRAY(DataTypes.DATEONLY),
-    },
-})
-
-CarScheduleModel.hasOne(CarModel)
-CarModel.belongsTo(CarScheduleModel)
-
 const UserHistoryModel = sequelize.define("userHistory", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     carId: {
@@ -135,6 +121,5 @@ module.exports = {
     ClassModel,
     RentalParkingModel,
     MaintenanceParkingModel,
-    CarScheduleModel,
     UserHistoryModel,
 }
