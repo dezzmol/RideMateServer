@@ -42,14 +42,7 @@ const CarModel = sequelize.define("car", {
     model: { type: DataTypes.STRING, allowNull: false },
     price: { type: DataTypes.INTEGER, allowNull: false },
     mileage: { type: DataTypes.INTEGER, allowNull: false },
-    lastMileageOnTS: { type: DataTypes.INTEGER, defaultValue: 0 },
     fuelConsumption: { type: DataTypes.DOUBLE, allowNull: false },
-    //0 - rentalParking, 1 - maintenanceParking
-    technicalCondition: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-    },
     img: { type: DataTypes.STRING, allowNull: false },
 })
 
