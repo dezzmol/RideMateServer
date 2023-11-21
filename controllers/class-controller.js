@@ -39,15 +39,11 @@ class ClassController {
         try {
             const { classId } = req.body
 
-            const deletionRes = await ClassService.delete(classId)
+            await ClassService.delete(classId)
 
-            if (deletionRes === 1) {
-                return res.json(
-                    `The class with ID ${classId} was deleted successfully`
-                )
-            }
-
-            return res.json("Something went wrong")
+            return res.json({
+                message: `The class with ID ${classId} was deleted successfully`,
+            })
         } catch (e) {
             next(e)
         }

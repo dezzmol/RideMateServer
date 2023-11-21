@@ -51,7 +51,9 @@ class ClassService {
             where: { id: classId },
         })
 
-        return deletedClass
+        if (deletedClass === 0) {
+            throw ApiError.BadRequest(`Class with ID ${classId} does not exist`)
+        }
     }
 }
 
