@@ -1,5 +1,5 @@
-const ApiError = require("../exceptions/api-error");
-const {ClassModel} = require("../models/models");
+const ApiError = require("../exceptions/api-error")
+const { ClassModel } = require("../models/models")
 
 class ClassService {
     async create(name) {
@@ -7,13 +7,13 @@ class ClassService {
             throw ApiError.BadRequest("Name field is empty")
         }
 
-        const isExist = await ClassModel.findOne({where: {name}})
+        const isExist = await ClassModel.findOne({ where: { name } })
 
         if (isExist) {
             throw ApiError.BadRequest("This class already exist")
         }
 
-        const carClass = await ClassModel.create({name: name})
+        const carClass = await ClassModel.create({ name: name })
 
         return carClass
     }
@@ -33,13 +33,25 @@ class ClassService {
             throw ApiError.BadRequest("Id field is empty")
         }
 
-        const carClass = await ClassModel.findOne({where: {id: classId}})
+        const carClass = await ClassModel.findOne({ where: { id: classId } })
 
         if (!carClass) {
             throw ApiError.BadRequest("Class with this id doesn't exist")
         }
 
         return carClass
+    }
+
+    async delete(classId) {
+        if (!classId) {
+            throw ApiError.BadRequest("Id field is empty")
+        }
+
+        const deletedClass = await ClassModel.destroy({
+            where: { id: classId },
+        })
+
+        return deletedClass
     }
 }
 
