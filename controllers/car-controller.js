@@ -72,15 +72,11 @@ class CarController {
         try {
             const { carId } = req.body
 
-            const deletionRes = await CarService.delete(carId)
+            await CarService.delete(carId)
 
-            if (deletionRes === 1) {
-                return res.json(
-                    `The car with ID ${carId} was deleted successfully`
-                )
-            }
-
-            return res.json("Something went wrong")
+            return res.json({
+                message: `The car with ID ${carId} was deleted successfully`,
+            })
         } catch (e) {
             next(e)
         }

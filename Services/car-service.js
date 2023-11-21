@@ -128,9 +128,11 @@ class CarService {
             throw ApiError.BadRequest("Id field is empty")
         }
 
-        const car = await CarModel.destroy({ where: { id: carId } })
+        const deletedCar = await CarModel.destroy({ where: { id: carId } })
 
-        return car
+        if (deletedCar === 0) {
+            throw ApiError.BadRequest(`Car with ID ${carId} does not exist`)
+        }
     }
 }
 
