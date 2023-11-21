@@ -3,8 +3,16 @@ const CarService = require("../services/car-service")
 class CarController {
     async getAll(req, res, next) {
         try {
-            let { brandId, classId, minPrice, maxPrice, startDate, endDate, limit, page } =
-                req.query
+            let {
+                brandId,
+                classId,
+                minPrice,
+                maxPrice,
+                startDate,
+                endDate,
+                limit,
+                page,
+            } = req.query
             limit = limit || 10
             page = page || 1
             minPrice = minPrice || 0
@@ -55,6 +63,24 @@ class CarController {
             )
 
             return res.json(car)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async delete(req, res, next) {
+        try {
+            const { carId } = req.body
+
+            const deletionRes = await CarService.delete(carId)
+
+            if (deletionRes === 1) {
+                return res.json(
+                    `The car with ID ${carId} was deleted successfully`
+                )
+            }
+
+            return res.json("Something went wrong")
         } catch (e) {
             next(e)
         }
