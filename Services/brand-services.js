@@ -51,7 +51,9 @@ class BrandServices {
             where: { id: brandId },
         })
 
-        return deletedBrand
+        if (deletedBrand === 0) {
+            throw ApiError.BadRequest(`Brand with ID ${brandId} does not exist`)
+        }
     }
 }
 

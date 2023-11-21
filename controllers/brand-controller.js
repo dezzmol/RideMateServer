@@ -36,15 +36,11 @@ class BrandController {
         try {
             const { brandId } = req.body
 
-            const deletionRes = await BrandServices.delete(brandId)
+            await BrandServices.delete(brandId)
 
-            if (deletionRes === 1) {
-                return res.json(
-                    `The brand with ID ${brandId} was deleted successfully`
-                )
-            }
-
-            return res.json("Something went wrong")
+            return res.json({
+                message: `The brand with ID ${brandId} was deleted successfully`,
+            })
         } catch (e) {
             next(e)
         }
