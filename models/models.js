@@ -44,6 +44,9 @@ const CarModel = sequelize.define("car", {
     mileage: { type: DataTypes.INTEGER, allowNull: false },
     fuelConsumption: { type: DataTypes.DOUBLE, allowNull: false },
     img: { type: DataTypes.STRING, allowNull: false },
+
+    // Поле означающее будет ли отображена машина в общем списке всех авто. При true будет, при false нет
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
 })
 
 const BrandModel = sequelize.define("brand", {
@@ -61,7 +64,6 @@ CarModel.belongsTo(BrandModel)
 
 ClassModel.hasMany(CarModel)
 CarModel.belongsTo(ClassModel)
-
 
 const UserHistoryModel = sequelize.define("userHistory", {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
