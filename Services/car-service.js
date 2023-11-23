@@ -123,16 +123,14 @@ class CarService {
         return car
     }
 
-    async delete(carId) {
+    async remove(carId) {
         if (!carId) {
             throw ApiError.BadRequest("Id field is empty")
         }
 
-        const deletedCar = await CarModel.destroy({ where: { id: carId } })
-
-        if (deletedCar === 0) {
-            throw ApiError.BadRequest(`Car with ID ${carId} does not exist`)
-        }
+        const car = await CarModel.findOne({ where: { id: carId } })
+        car.isActive = false
+        car.save()
     }
 }
 
