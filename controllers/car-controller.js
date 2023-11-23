@@ -68,14 +68,14 @@ class CarController {
         }
     }
 
-    async delete(req, res, next) {
+    async remove(req, res, next) {
         try {
             const { carId } = req.body
 
-            await CarService.delete(carId)
+            await CarService.remove(carId)
 
             return res.json({
-                message: `The car with ID ${carId} was deleted successfully`,
+                message: `The car with ID ${carId} was removed from public list successfully`,
             })
         } catch (e) {
             next(e)
