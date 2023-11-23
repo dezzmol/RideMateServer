@@ -41,20 +41,6 @@ class BrandServices {
 
         return brand
     }
-
-    async delete(brandId) {
-        if (!brandId) {
-            throw ApiError.BadRequest("Id field is empty")
-        }
-
-        const deletedBrand = await BrandModel.destroy({
-            where: { id: brandId },
-        })
-
-        if (deletedBrand === 0) {
-            throw ApiError.BadRequest(`Brand with ID ${brandId} does not exist`)
-        }
-    }
 }
 
 module.exports = new BrandServices()

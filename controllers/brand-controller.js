@@ -31,20 +31,6 @@ class BrandController {
             next(e)
         }
     }
-
-    async delete(req, res, next) {
-        try {
-            const { brandId } = req.body
-
-            await BrandServices.delete(brandId)
-
-            return res.json({
-                message: `The brand with ID ${brandId} was deleted successfully`,
-            })
-        } catch (e) {
-            next(e)
-        }
-    }
 }
 
 module.exports = new BrandController()
