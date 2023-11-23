@@ -41,20 +41,6 @@ class ClassService {
 
         return carClass
     }
-
-    async delete(classId) {
-        if (!classId) {
-            throw ApiError.BadRequest("Id field is empty")
-        }
-
-        const deletedClass = await ClassModel.destroy({
-            where: { id: classId },
-        })
-
-        if (deletedClass === 0) {
-            throw ApiError.BadRequest(`Class with ID ${classId} does not exist`)
-        }
-    }
 }
 
 module.exports = new ClassService()

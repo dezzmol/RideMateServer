@@ -34,20 +34,6 @@ class ClassController {
             next(e)
         }
     }
-
-    async delete(req, res, next) {
-        try {
-            const { classId } = req.body
-
-            await ClassService.delete(classId)
-
-            return res.json({
-                message: `The class with ID ${classId} was deleted successfully`,
-            })
-        } catch (e) {
-            next(e)
-        }
-    }
 }
 
 module.exports = new ClassController()
