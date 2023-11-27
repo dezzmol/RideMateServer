@@ -132,6 +132,16 @@ class CarService {
         car.isActive = false
         car.save()
     }
+
+    async recover(carId) {
+        if (!carId) {
+            throw ApiError.BadRequest("Id field is empty")
+        }
+
+        const car = await CarModel.findOne({ where: { id: carId } })
+        car.isActive = true
+        car.save()
+    }
 }
 
 module.exports = new CarService()

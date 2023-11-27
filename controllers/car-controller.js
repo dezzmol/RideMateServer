@@ -81,6 +81,20 @@ class CarController {
             next(e)
         }
     }
+
+    async recover(req, res, next) {
+        try {
+            const { carId } = req.body
+
+            await CarService.recover(carId)
+
+            return res.json({
+                message: `The car with ID ${carId} has been successfully restored to the public list`,
+            })
+        } catch (e) {
+            next(e)
+        }
+    }
 }
 
 module.exports = new CarController()
