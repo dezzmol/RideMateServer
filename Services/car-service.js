@@ -139,8 +139,13 @@ class CarService {
         }
 
         const car = await CarModel.findOne({ where: { id: carId } })
-        car.isActive = true
-        car.save()
+
+        if (!car.isActive) {
+            car.isActive = true
+            car.save()
+        } else {
+            throw ApiError.BadRequest("The car is already on the public list")
+        }
     }
 }
 
