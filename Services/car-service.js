@@ -132,6 +132,21 @@ class CarService {
         car.isActive = false
         car.save()
     }
+
+    async recover(carId) {
+        if (!carId) {
+            throw ApiError.BadRequest("Id field is empty")
+        }
+
+        const car = await CarModel.findOne({ where: { id: carId } })
+
+        if (!car.isActive) {
+            car.isActive = true
+            car.save()
+        } else {
+            throw ApiError.BadRequest("The car is already on the public list")
+        }
+    }
 }
 
 module.exports = new CarService()
