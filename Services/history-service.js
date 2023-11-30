@@ -2,9 +2,8 @@ const { UserHistoryModel, CarModel, BrandModel } = require("../models/models")
 const ApiError = require("../exceptions/api-error")
 
 const isBusyDates = (firstDates, secondDates) => {
-    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0]);
+    return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0])
 }
-
 
 class HistoryService {
     async getAll(userId) {
@@ -41,22 +40,32 @@ class HistoryService {
         const endDateTimestamp = Date.parse(endDate.toString())
 
         if (startDateTimestamp > endDateTimestamp) {
-            throw ApiError.BadRequest("Start date can't be bigger than end date")
+            throw ApiError.BadRequest(
+                "Start date can't be bigger than end date"
+            )
         }
 
         const existingRentals = await UserHistoryModel.findAll({
             where: {
-                carId: carId
+                carId: carId,
             },
-        });
-
+        })
 
         if (existingRentals.length > 0) {
-            existingRentals.map(existingRental => {
-                const existingRentalDates = existingRental.getDataValue("occupied_dates")
+            existingRentals.map((existingRental) => {
+                const existingRentalDates =
+                    existingRental.getDataValue("occupied_dates")
                 const existingRentalStartDate = new Date(existingRentalDates[0])
                 const existingRentalEndDate = new Date(existingRentalDates[1])
-                if (isBusyDates([new Date(startDateTimestamp), new Date(endDateTimestamp)], [existingRentalStartDate, existingRentalEndDate])) {
+                if (
+                    isBusyDates(
+                        [
+                            new Date(startDateTimestamp),
+                            new Date(endDateTimestamp),
+                        ],
+                        [existingRentalStartDate, existingRentalEndDate]
+                    )
+                ) {
                     throw ApiError.BadRequest("Dates are busy")
                 }
             })
@@ -64,14 +73,20 @@ class HistoryService {
 
         const car = await CarModel.findOne({ where: { id: carId } })
 
-        const daysDiff = Math.ceil((new Date(endDateTimestamp) - new Date(startDateTimestamp)) / (1000 * 60 * 60 * 24));
+        const daysDiff = Math.ceil(
+            (new Date(endDateTimestamp) - new Date(startDateTimestamp)) /
+                (1000 * 60 * 60 * 24)
+        )
 
-        const totalPrice = car.price * daysDiff;
+        const totalPrice = car.price * daysDiff + car.price
 
         const userHistory = await UserHistoryModel.create({
             carId,
             userId,
-            occupied_dates: [new Date(startDateTimestamp), new Date(endDateTimestamp)],
+            occupied_dates: [
+                new Date(startDateTimestamp),
+                new Date(endDateTimestamp),
+            ],
             totalPrice,
         })
 
