@@ -8,6 +8,23 @@ const isBusyDates = (firstDates, secondDates) => {
     return !(firstDates[1] < secondDates[0] || secondDates[1] < firstDates[0])
 }
 
+function sortByField(arr, sort, sortBy) {
+    const compareFunction = (a, b) => {
+        const valueA = typeof a[sort] === 'string' ? a[sort] : String(a[sort]);
+        const valueB = typeof b[sort] === 'string' ? b[sort] : String(b[sort]);
+
+        if (sortBy === 'asc') {
+            return valueA.localeCompare(valueB, undefined, { numeric: true });
+        } else if (sortBy === 'desc') {
+            return valueB.localeCompare(valueA, undefined, { numeric: true });
+        }
+
+        return 0;
+    };
+
+    return arr.slice().sort(compareFunction)
+}
+
 class CarService {
     async create(
         model,
@@ -46,7 +63,9 @@ class CarService {
         endDate,
         limit,
         page,
-        offset
+        offset,
+        sort,
+        sortBy
     ) {
         const whereParam = {}
 
@@ -104,6 +123,10 @@ class CarService {
                     }
                 }
             })
+        }
+
+        if (sort && sortBy) {
+            cars = sortByField(cars, sort, sortBy)
         }
 
         return { rows: cars, count: cars.length }
