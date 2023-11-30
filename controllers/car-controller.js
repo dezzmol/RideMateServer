@@ -12,6 +12,8 @@ class CarController {
                 endDate,
                 limit,
                 page,
+                sort,
+                sortBy
             } = req.query
             limit = limit || 10
             page = page || 1
@@ -26,7 +28,9 @@ class CarController {
                 endDate,
                 limit,
                 page,
-                offset
+                offset,
+                sort,
+                sortBy
             )
             res.json(cars)
         } catch (e) {
